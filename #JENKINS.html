@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Jenkins Practical &mdash; Complete macOS Roadmap</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="jenkins-practical--complete-macos-roadmap">Jenkins Practical — Complete macOS Roadmap</h1>
+<p>Your teacher's material is written mainly for <strong>Windows</strong>, so I would <strong>not follow it literally on your Mac</strong>. I’ll keep the same tasks, job names, concepts, and expected results, but translate the commands and installation steps to macOS.</p>
+<p>The overall order is:</p>
+<p><strong>macOS prerequisites → Java → Jenkins → Jenkins initial setup → Git/GitHub → Jenkins plugins → Freestyle basics → Pipeline basics → Git integration → Poll SCM → Webhooks → Build numbers → Artifacts → Security → Agents/Executors → final evidence</strong></p>
+<hr>
+<h1 id="part-0--understand-what-you-are-going-to-build">PART 0 — Understand what you are going to build</h1>
+<p>By the end, you should have these Jenkins jobs.</p>
+<h2 id="freestyle-jobs">Freestyle jobs</h2>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Jenkins Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>HelloWorldJob</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>WorkspaceJob</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>FileCopyJob</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>ParameterizedJob</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>ScheduledJob</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>GitJob</code></td>
+</tr>
+</tbody>
+</table>
+<p>These correspond directly to your teacher's Freestyle practical.</p>
+<h2 id="pipeline-jobs">Pipeline jobs</h2>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Jenkins Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td><code>EchoPipeline</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>BuildTestPipeline</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>FilePipeline</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>UserPipeline</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>ScheduledPipeline</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>GitPipeline</code></td>
+</tr>
+</tbody>
+</table>
+<p>These are the six Pipeline exercises in your teacher's Pipeline document.</p>
+<h2 id="automatic-build-jobs">Automatic-build jobs</h2>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Jenkins Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13</td>
+<td><code>Jenkins-Polling-Demo</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>Jenkins-Webhook-Demo</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>Jenkins-Pipeline-Demo</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>Jenkins-Version-Demo</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h1 id="part-1--install-the-macos-prerequisites">PART 1 — Install the macOS prerequisites</h1>
+<p>Your teacher allows:</p>
+<ul>
+<li>JDK 11</li>
+<li>JDK 17</li>
+<li>JDK 21</li>
+</ul>
+<p>For your Mac, I recommend <strong>JDK 21</strong>.</p>
+<h2 id="step-1--open-terminal">Step 1 — Open Terminal</h2>
+<p>Press:</p>
+<p><strong>Command + Space</strong></p>
+<p>Type:</p>
+<pre><code class="language-text">Terminal
+</code></pre>
+<p>Press Enter.</p>
+<hr>
+<h1 id="step-2--check-whether-homebrew-is-installed">Step 2 — Check whether Homebrew is installed</h1>
+<p>Run:</p>
+<pre><code class="language-bash">brew --version
+</code></pre>
+<p>If you see something like:</p>
+<pre><code class="language-text">Homebrew ...
+</code></pre>
+<p>you're good.</p>
+<p>If you get:</p>
+<pre><code class="language-text">command not found: brew
+</code></pre>
+<p>install Homebrew from its official site.</p>
+<p>After installation, reopen Terminal.</p>
+<p>Then:</p>
+<pre><code class="language-bash">brew --version
+</code></pre>
+<hr>
+<h1 id="part-2--install-java">PART 2 — Install Java</h1>
+<h2 id="step-3--install-jdk-21">Step 3 — Install JDK 21</h2>
+<pre><code class="language-bash">brew install openjdk@21
+</code></pre>
+<p>Then check:</p>
+<pre><code class="language-bash">java -version
+</code></pre>
+<p>If Java is already installed and you see Java 21, don't reinstall it.</p>
+<hr>
+<h2 id="step-4--configure-java-on-macos">Step 4 — Configure Java on macOS</h2>
+<p>Run:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export PATH=&quot;/opt/homebrew/opt/openjdk@21/bin:$PATH&quot;&#x27;</span> &gt;&gt; ~/.zshrc
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">source</span> ~/.zshrc
+</code></pre>
+<p>Check:</p>
+<pre><code class="language-bash">java -version
+</code></pre>
+<p>Also:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">which</span> java
+</code></pre>
+<hr>
+<h2 id="step-5--set-java_home">Step 5 — Set JAVA_HOME</h2>
+<p>Run:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export JAVA_HOME=$(/usr/libexec/java_home -v 21)&#x27;</span> &gt;&gt; ~/.zshrc
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">source</span> ~/.zshrc
+</code></pre>
+<p>Check:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$JAVA_HOME</span>
+</code></pre>
+<p>And:</p>
+<pre><code class="language-bash">java -version
+</code></pre>
+<h3 id="stop-here-and-verify">Stop here and verify</h3>
+<p>You want:</p>
+<pre><code class="language-text">java version &quot;21...&quot;
+</code></pre>
+<p>before proceeding.</p>
+<hr>
+<h1 id="part-3--install-git">PART 3 — Install Git</h1>
+<p>Check:</p>
+<pre><code class="language-bash">git --version
+</code></pre>
+<p>If Git isn't installed, run:</p>
+<pre><code class="language-bash">xcode-select --install
+</code></pre>
+<p>Then verify:</p>
+<pre><code class="language-bash">git --version
+</code></pre>
+<hr>
+<h1 id="part-4--configure-your-git-identity">PART 4 — Configure your Git identity</h1>
+<p>Run:</p>
+<pre><code class="language-bash">git config --global user.name <span class="hljs-string">&quot;Your Name&quot;</span>
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash">git config --global user.email <span class="hljs-string">&quot;your-email@example.com&quot;</span>
+</code></pre>
+<p>Check:</p>
+<pre><code class="language-bash">git config --global --list
+</code></pre>
+<hr>
+<h1 id="part-5--install-jenkins">PART 5 — Install Jenkins</h1>
+<p>For macOS, don't download the Windows installer mentioned in your teacher's document.</p>
+<p>Use the macOS/Homebrew installation method.</p>
+<h2 id="step-6--install-jenkins">Step 6 — Install Jenkins</h2>
+<pre><code class="language-bash">brew install jenkins-lts
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash">brew services start jenkins-lts
+</code></pre>
+<p>Check:</p>
+<pre><code class="language-bash">brew services list
+</code></pre>
+<p>You should see Jenkins running.</p>
+<hr>
+<h1 id="part-6--open-jenkins">PART 6 — Open Jenkins</h1>
+<p>Open your browser.</p>
+<p>Go to:</p>
+<pre><code class="language-text">http://localhost:8080
+</code></pre>
+<hr>
+<h1 id="part-7--find-the-initial-jenkins-password">PART 7 — Find the initial Jenkins password</h1>
+<p>First try:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">cat</span> ~/.jenkins/secrets/initialAdminPassword
+</code></pre>
+<p>If that doesn't work:</p>
+<pre><code class="language-bash">find ~/.jenkins -name initialAdminPassword 2&gt;/dev/null
+</code></pre>
+<p>Copy the password shown by the command.</p>
+<p><strong>Do not guess the password.</strong></p>
+<hr>
+<h1 id="part-8--jenkins-initial-setup">PART 8 — Jenkins Initial Setup</h1>
+<p>The Jenkins wizard should appear.</p>
+<p>You'll see:</p>
+<p><strong>Unlock Jenkins</strong></p>
+<p>Paste the initial administrator password.</p>
+<p>Then choose:</p>
+<p><strong>Install suggested plugins</strong></p>
+<p>Let Jenkins finish installing the plugins.</p>
+<hr>
+<h1 id="part-9--create-your-jenkins-administrator">PART 9 — Create your Jenkins administrator</h1>
+<p>Enter:</p>
+<pre><code class="language-text">Username:
+admin
+</code></pre>
+<p>Choose a strong password.</p>
+<p>Then enter:</p>
+<pre><code class="language-text">Full name:
+Your Name
+
+Email:
+your-email@example.com
+</code></pre>
+<p>Click:</p>
+<p><strong>Save and Continue</strong></p>
+<p>Then:</p>
+<p><strong>Start using Jenkins</strong></p>
+<hr>
+<h1 id="part-10--verify-jenkins-is-working">PART 10 — Verify Jenkins is working</h1>
+<p>You should now see:</p>
+<p><strong>Jenkins Dashboard</strong></p>
+<p>On the left you'll see things such as:</p>
+<ul>
+<li>New Item</li>
+<li>People</li>
+<li>Build History</li>
+<li>Manage Jenkins</li>
+<li>Credentials</li>
+</ul>
+<p>At this point:</p>
+<blockquote>
+<p><strong>Jenkins installation is complete.</strong></p>
+</blockquote>
+<hr>
+<h1 id="part-11--configure-gitgithub-support">PART 11 — Configure Git/GitHub support</h1>
+<p>Go to:</p>
+<p><strong>Manage Jenkins → Plugins</strong></p>
+<p>Check that Git-related plugins are installed.</p>
+<p>Look for:</p>
+<pre><code class="language-text">Git
+Git client
+GitHub
+</code></pre>
+<p>If required, install them from:</p>
+<p><strong>Available plugins</strong></p>
+<hr>
+<h1 id="part-12--understand-jenkins-before-doing-practicals">PART 12 — Understand Jenkins before doing practicals</h1>
+<h3 id="ci">CI</h3>
+<p>Continuous Integration means developers integrate changes frequently and the system automatically builds/tests them.</p>
+<h3 id="cd">CD</h3>
+<p>Continuous Delivery means software is kept in a state where it can be released at any time.</p>
+<h3 id="scm">SCM</h3>
+<p>Source Code Management.</p>
+<p>For us:</p>
+<pre><code class="language-text">Git + GitHub
+</code></pre>
+<h3 id="job">Job</h3>
+<p>A task configured in Jenkins.</p>
+<h3 id="build">Build</h3>
+<p>One execution of a Jenkins job.</p>
+<h3 id="workspace">Workspace</h3>
+<p>The directory where Jenkins performs the job.</p>
+<h3 id="pipeline">Pipeline</h3>
+<p>A Jenkins workflow consisting of stages.</p>
+<h3 id="artifact">Artifact</h3>
+<p>Something produced by a build.</p>
+<h3 id="trigger">Trigger</h3>
+<p>Something that causes Jenkins to start a build.</p>
+<hr>
+<h1 id="part-13--your-first-jenkins-job">PART 13 — Your first Jenkins job</h1>
+<h1 id="freestyle-task-1--helloworldjob">FREESTYLE TASK 1 — HelloWorldJob</h1>
+<p>Create:</p>
+<pre><code class="language-text">HelloWorldJob
+</code></pre>
+<p>Select:</p>
+<p><strong>Freestyle project</strong></p>
+<p>Click:</p>
+<p><strong>OK</strong></p>
+<h2 id="add-shell-command">Add shell command</h2>
+<p>Scroll to:</p>
+<p><strong>Build Steps</strong></p>
+<p>Click:</p>
+<p><strong>Add build step → Execute shell</strong></p>
+<p>On macOS/Linux, use:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Hello, Jenkins!&quot;</span>
+</code></pre>
+<p>Click:</p>
+<p><strong>Save</strong></p>
+<p>Then:</p>
+<p><strong>Build Now</strong></p>
+<p>Click the build number, for example:</p>
+<pre><code class="language-text">#1
+</code></pre>
+<p>Then:</p>
+<p><strong>Console Output</strong></p>
+<p>You should see:</p>
+<pre><code class="language-text">Hello, Jenkins!
+</code></pre>
+<h3 id="task-complete">Task complete.</h3>
+<hr>
+<h1 id="freestyle-task-2--workspacejob">FREESTYLE TASK 2 — WorkspaceJob</h1>
+<p>Create:</p>
+<pre><code class="language-text">WorkspaceJob
+</code></pre>
+<p>Select:</p>
+<p><strong>Freestyle project</strong></p>
+<p>Build Step:</p>
+<p><strong>Execute shell</strong></p>
+<p>Use:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;The workspace path is: <span class="hljs-variable">$WORKSPACE</span>&quot;</span>
+</code></pre>
+<p>Save → Build Now → Console Output.</p>
+<p>You should see something similar to:</p>
+<pre><code class="language-text">The workspace path is: /Users/.../.jenkins/workspace/WorkspaceJob
+</code></pre>
+<hr>
+<h1 id="freestyle-task-3--filecopyjob">FREESTYLE TASK 3 — FileCopyJob</h1>
+<p>The teacher's Windows version copies to:</p>
+<pre><code class="language-text">C:\inetpub\wwwroot\Devops\
+</code></pre>
+<p>We won't use that on your Mac.</p>
+<p>Instead, create a folder in your home directory.</p>
+<h2 id="step-1--terminal">Step 1 — Terminal</h2>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p ~/jenkins-devops-copy
+</code></pre>
+<h2 id="step-2--jenkins-job">Step 2 — Jenkins job</h2>
+<p>Create:</p>
+<pre><code class="language-text">FileCopyJob
+</code></pre>
+<p>Freestyle.</p>
+<p>Build Step → Execute shell:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Hello from Jenkins&quot;</span> &gt; <span class="hljs-string">&quot;<span class="hljs-variable">$WORKSPACE</span>/test.txt&quot;</span>
+
+<span class="hljs-built_in">cp</span> <span class="hljs-string">&quot;<span class="hljs-variable">$WORKSPACE</span>/test.txt&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/jenkins-devops-copy/test.txt&quot;</span>
+
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;File copied successfully.&quot;</span>
+</code></pre>
+<h2 id="step-3--build">Step 3 — Build</h2>
+<p>Click:</p>
+<p><strong>Build Now</strong></p>
+<p>Then:</p>
+<p><strong>Console Output</strong></p>
+<p>Verify:</p>
+<pre><code class="language-text">File copied successfully.
+</code></pre>
+<h2 id="step-4--verify-from-terminal">Step 4 — Verify from Terminal</h2>
+<pre><code class="language-bash"><span class="hljs-built_in">cat</span> ~/jenkins-devops-copy/test.txt
+</code></pre>
+<p>Expected:</p>
+<pre><code class="language-text">Hello from Jenkins
+</code></pre>
+<hr>
+<h1 id="freestyle-task-4--parameterizedjob">FREESTYLE TASK 4 — ParameterizedJob</h1>
+<p>Create:</p>
+<pre><code class="language-text">ParameterizedJob
+</code></pre>
+<p>Select:</p>
+<p><strong>This project is parameterized</strong></p>
+<p>Click:</p>
+<p><strong>Add Parameter → String Parameter</strong></p>
+<p>Name:</p>
+<pre><code class="language-text">USERNAME
+</code></pre>
+<p>Default value:</p>
+<pre><code class="language-text">User
+</code></pre>
+<p>Build Step → Execute shell:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Hello, <span class="hljs-variable">$USERNAME</span>&quot;</span>
+</code></pre>
+<p>Save.</p>
+<p>Click:</p>
+<p><strong>Build with Parameters</strong></p>
+<p>Enter:</p>
+<pre><code class="language-text">Timothy
+</code></pre>
+<p>Build.</p>
+<p>Then try another value.</p>
+<p>Console should show:</p>
+<pre><code class="language-text">Hello, Timothy
+</code></pre>
+<hr>
+<h1 id="freestyle-task-5--scheduledjob">FREESTYLE TASK 5 — ScheduledJob</h1>
+<p>Create:</p>
+<pre><code class="language-text">ScheduledJob
+</code></pre>
+<p>Freestyle.</p>
+<p>Go to:</p>
+<p><strong>Build Triggers</strong></p>
+<p>Select:</p>
+<p><strong>Build periodically</strong></p>
+<p>Enter:</p>
+<pre><code class="language-text">H/2 * * * *
+</code></pre>
+<p>Build Step → Execute shell:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Current date and time: <span class="hljs-subst">$(date)</span>&quot;</span>
+</code></pre>
+<p>Save.</p>
+<p>Wait and verify multiple automatic builds.</p>
+<p>After verifying it works, <strong>disable the schedule</strong> so it doesn't keep running forever.</p>
+<hr>
+<h1 id="freestyle-task-6--gitjob">FREESTYLE TASK 6 — GitJob</h1>
+<p>Create GitHub repository:</p>
+<pre><code class="language-text">jenkins-git-demo
+</code></pre>
+<p>Add:</p>
+<pre><code class="language-text">index.html
+</code></pre>
+<p>Then create Jenkins:</p>
+<pre><code class="language-text">GitJob
+</code></pre>
+<p>Freestyle.</p>
+<p>Go to:</p>
+<p><strong>Source Code Management → Git</strong></p>
+<p>Repository URL:</p>
+<pre><code class="language-text">https://github.com/YOUR_USERNAME/jenkins-git-demo.git
+</code></pre>
+<p>Branch:</p>
+<pre><code class="language-text">*/main
+</code></pre>
+<p>Build Step → Execute shell:</p>
+<pre><code class="language-bash">git <span class="hljs-built_in">log</span> -1 --pretty=%B
+</code></pre>
+<p>Save → Build Now → Console Output.</p>
+<p>You should see the latest commit message.</p>
+<hr>
+<h1 id="part-14--pipeline-tasks">PART 14 — Pipeline tasks</h1>
+<p>Now move to Pipelines.</p>
+<hr>
+<h1 id="pipeline-task-1--echopipeline">PIPELINE TASK 1 — EchoPipeline</h1>
+<p>Create:</p>
+<pre><code class="language-text">EchoPipeline
+</code></pre>
+<p>Select:</p>
+<p><strong>Pipeline</strong></p>
+<p>Under Pipeline → Pipeline script:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Echo&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Hello, Jenkins Pipeline!&#x27;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Save → Build Now → Console Output.</p>
+<p>Expected:</p>
+<pre><code class="language-text">Hello, Jenkins Pipeline!
+</code></pre>
+<hr>
+<h1 id="pipeline-task-2--buildtestpipeline">PIPELINE TASK 2 — BuildTestPipeline</h1>
+<p>Create:</p>
+<pre><code class="language-text">BuildTestPipeline
+</code></pre>
+<p>Pipeline script:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Build&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Building the project...&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Test&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Running tests...&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Deploy&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Deploying application...&#x27;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Run it.</p>
+<p>You should see:</p>
+<pre><code class="language-text">Build
+   ↓
+Test
+   ↓
+Deploy
+</code></pre>
+<hr>
+<h1 id="pipeline-task-3--filepipeline">PIPELINE TASK 3 — FilePipeline</h1>
+<p>Create:</p>
+<pre><code class="language-text">FilePipeline
+</code></pre>
+<p>Use the macOS/Linux version:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Create File&#x27;</span>) {
+            steps {
+                writeFile(
+                    <span class="hljs-symbol">file:</span> <span class="hljs-string">&#x27;pipeline.txt&#x27;</span>,
+                    <span class="hljs-symbol">text:</span> <span class="hljs-string">&#x27;Created by Jenkins Pipeline&#x27;</span>
+                )
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Show File&#x27;</span>) {
+            steps {
+                sh <span class="hljs-string">&#x27;cat pipeline.txt&#x27;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Run it.</p>
+<hr>
+<h1 id="pipeline-task-4--userpipeline">PIPELINE TASK 4 — UserPipeline</h1>
+<p>Create:</p>
+<pre><code class="language-text">UserPipeline
+</code></pre>
+<p>Use:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    parameters {
+        string(
+            <span class="hljs-symbol">name:</span> <span class="hljs-string">&#x27;USERNAME&#x27;</span>,
+            <span class="hljs-symbol">defaultValue:</span> <span class="hljs-string">&#x27;User&#x27;</span>,
+            <span class="hljs-symbol">description:</span> <span class="hljs-string">&#x27;Enter your name&#x27;</span>
+        )
+    }
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Greet&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&quot;Hello, ${params.USERNAME}!&quot;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Save.</p>
+<p>Choose:</p>
+<p><strong>Build with Parameters</strong></p>
+<p>Try different values.</p>
+<hr>
+<h1 id="pipeline-task-5--scheduledpipeline">PIPELINE TASK 5 — ScheduledPipeline</h1>
+<p>Create:</p>
+<pre><code class="language-text">ScheduledPipeline
+</code></pre>
+<p>Use:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    triggers {
+        cron(<span class="hljs-string">&#x27;H/5 * * * *&#x27;</span>)
+    }
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Show Time&#x27;</span>) {
+            steps {
+                sh <span class="hljs-string">&#x27;date&#x27;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Verify multiple builds.</p>
+<p>Then disable the trigger after testing.</p>
+<hr>
+<h1 id="pipeline-task-6--gitpipeline">PIPELINE TASK 6 — GitPipeline</h1>
+<p>Create GitHub repository:</p>
+<pre><code class="language-text">jenkins-pipeline-git-demo
+</code></pre>
+<p>Add an <code>index.html</code>.</p>
+<p>Then create Jenkins:</p>
+<pre><code class="language-text">GitPipeline
+</code></pre>
+<p>Use:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Checkout&#x27;</span>) {
+            steps {
+                git <span class="hljs-attr">branch:</span> <span class="hljs-string">&#x27;main&#x27;</span>,
+                    <span class="hljs-symbol">url:</span> <span class="hljs-string">&#x27;https://github.com/YOUR_USERNAME/jenkins-pipeline-git-demo.git&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Build&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Compiling code...&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Commit Info&#x27;</span>) {
+            steps {
+                sh <span class="hljs-string">&#x27;git log -1 --pretty=%B&#x27;</span>
+            }
+        }
+    }
+}
+</code></pre>
+<p>Run it.</p>
+<p>You should see:</p>
+<pre><code class="language-text">Checkout
+Build
+Commit Info
+</code></pre>
+<p>and the latest Git commit message.</p>
+<hr>
+<h1 id="part-15--automatic-build-1-poll-scm">PART 15 — Automatic Build #1: Poll SCM</h1>
+<p>Create GitHub repository:</p>
+<pre><code class="language-text">jenkins-polling-demo
+</code></pre>
+<p>Add:</p>
+<pre><code class="language-text">index.html
+</code></pre>
+<p>Create Jenkins:</p>
+<pre><code class="language-text">Jenkins-Polling-Demo
+</code></pre>
+<p>Freestyle.</p>
+<h2 id="source-code-management">Source Code Management</h2>
+<p>Select:</p>
+<p><strong>Git</strong></p>
+<p>Repository:</p>
+<pre><code class="language-text">https://github.com/YOUR_USERNAME/jenkins-polling-demo.git
+</code></pre>
+<p>Branch:</p>
+<pre><code class="language-text">*/main
+</code></pre>
+<h2 id="build-triggers">Build Triggers</h2>
+<p>Select:</p>
+<p><strong>Poll SCM</strong></p>
+<p>Schedule:</p>
+<pre><code class="language-text">* * * * *
+</code></pre>
+<h2 id="build-step">Build Step</h2>
+<p>Execute shell:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Building Jenkins Application&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Build Number: <span class="hljs-variable">$BUILD_NUMBER</span>&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Workspace: <span class="hljs-variable">$WORKSPACE</span>&quot;</span>
+</code></pre>
+<p>Save.</p>
+<p>Build manually once.</p>
+<p>Then modify <code>index.html</code> and push:</p>
+<pre><code class="language-bash">git add .
+git commit -m <span class="hljs-string">&quot;Updated application&quot;</span>
+git push origin main
+</code></pre>
+<p>Wait approximately one minute.</p>
+<p>Jenkins should detect the change and create:</p>
+<pre><code class="language-text">Build #2
+</code></pre>
+<hr>
+<h1 id="part-16--automatic-build-2-github-webhook">PART 16 — Automatic Build #2: GitHub Webhook</h1>
+<p>Create:</p>
+<pre><code class="language-text">jenkins-webhook-demo
+</code></pre>
+<p>with:</p>
+<pre><code class="language-text">index.html
+</code></pre>
+<p>Create Jenkins:</p>
+<pre><code class="language-text">Jenkins-Webhook-Demo
+</code></pre>
+<p>Freestyle.</p>
+<p>Configure Git:</p>
+<pre><code class="language-text">https://github.com/YOUR_USERNAME/jenkins-webhook-demo.git
+</code></pre>
+<p>Branch:</p>
+<pre><code class="language-text">*/main
+</code></pre>
+<h2 id="build-trigger">Build Trigger</h2>
+<p>Enable:</p>
+<p><strong>GitHub hook trigger for GITScm polling</strong></p>
+<h2 id="build-step-1">Build Step</h2>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;==========================&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Jenkins Automatic Build&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;==========================&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Build Number: <span class="hljs-variable">$BUILD_NUMBER</span>&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Build completed successfully.&quot;</span>
+</code></pre>
+<p>Save.</p>
+<p>Build manually once.</p>
+<hr>
+<h1 id="important-mac-issue">Important Mac issue</h1>
+<p>Your Jenkins is running at:</p>
+<pre><code class="language-text">localhost:8080
+</code></pre>
+<p>GitHub cannot normally send a webhook to:</p>
+<pre><code class="language-text">http://localhost:8080
+</code></pre>
+<p>because <code>localhost</code> means your Mac, not GitHub's servers.</p>
+<p>Therefore, you need a <strong>publicly reachable Jenkins URL</strong> or an institution-approved tunneling setup.</p>
+<p>Do not attempt the webhook portion until your Jenkins endpoint is reachable from outside your Mac.</p>
+<hr>
+<h1 id="part-17--github-webhook">PART 17 — GitHub webhook</h1>
+<p>Your public Jenkins address will look conceptually like:</p>
+<pre><code class="language-text">https://YOUR-PUBLIC-JENKINS-URL
+</code></pre>
+<p>The webhook endpoint is:</p>
+<pre><code class="language-text">https://YOUR-PUBLIC-JENKINS-URL/github-webhook/
+</code></pre>
+<p>In GitHub:</p>
+<p><strong>Repository → Settings → Webhooks → Add webhook</strong></p>
+<p>Payload URL:</p>
+<pre><code class="language-text">https://YOUR-PUBLIC-JENKINS-URL/github-webhook/
+</code></pre>
+<p>Content type:</p>
+<pre><code class="language-text">application/json
+</code></pre>
+<p>Choose:</p>
+<p><strong>Just the push event</strong></p>
+<p>Add webhook.</p>
+<p>Then modify your application:</p>
+<pre><code class="language-bash">git add .
+git commit -m <span class="hljs-string">&quot;Updated application&quot;</span>
+git push origin main
+</code></pre>
+<p>GitHub should send the webhook.</p>
+<p>Jenkins should automatically create a new build.</p>
+<hr>
+<h1 id="part-18--automatic-pipeline">PART 18 — Automatic Pipeline</h1>
+<p>Create repository:</p>
+<pre><code class="language-text">jenkins-pipeline-demo
+</code></pre>
+<p>It should contain:</p>
+<pre><code class="language-text">index.html
+Jenkinsfile
+</code></pre>
+<p>Create <code>Jenkinsfile</code>:</p>
+<pre><code class="language-groovy">pipeline {
+    agent any
+
+    stages {
+        stage(<span class="hljs-string">&#x27;Checkout&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Checking out source code&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Build&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Building application&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Test&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Running test cases&#x27;</span>
+            }
+        }
+
+        stage(<span class="hljs-string">&#x27;Package&#x27;</span>) {
+            steps {
+                echo <span class="hljs-string">&#x27;Packaging application&#x27;</span>
+            }
+        }
+    }
+
+    post {
+        success {
+            echo <span class="hljs-string">&#x27;BUILD SUCCESSFUL&#x27;</span>
+        }
+
+        failure {
+            echo <span class="hljs-string">&#x27;BUILD FAILED&#x27;</span>
+        }
+    }
+}
+</code></pre>
+<p>Commit:</p>
+<pre><code class="language-bash">git add .
+git commit -m <span class="hljs-string">&quot;Add Jenkins pipeline&quot;</span>
+git push origin main
+</code></pre>
+<hr>
+<h1 id="jenkins-configuration">Jenkins configuration</h1>
+<p>Create:</p>
+<pre><code class="language-text">Jenkins-Pipeline-Demo
+</code></pre>
+<p>Select:</p>
+<p><strong>Pipeline</strong></p>
+<p>Under Pipeline:</p>
+<p><strong>Definition: Pipeline script from SCM</strong></p>
+<p>SCM:</p>
+<p><strong>Git</strong></p>
+<p>Repository:</p>
+<pre><code class="language-text">https://github.com/YOUR_USERNAME/jenkins-pipeline-demo.git
+</code></pre>
+<p>Branch:</p>
+<pre><code class="language-text">*/main
+</code></pre>
+<p>Script Path:</p>
+<pre><code class="language-text">Jenkinsfile
+</code></pre>
+<p>Click:</p>
+<p><strong>Build Now</strong></p>
+<p>Expected:</p>
+<pre><code class="language-text">Checkout
+   ↓
+Build
+   ↓
+Test
+   ↓
+Package
+   ↓
+BUILD SUCCESSFUL
+</code></pre>
+<p>Then configure:</p>
+<p><strong>GitHub hook trigger for GITScm polling</strong></p>
+<p>and the GitHub webhook.</p>
+<p>Change the application and push.</p>
+<p>Jenkins should automatically execute the pipeline.</p>
+<hr>
+<h1 id="part-19--build-number--version-task">PART 19 — Build Number / Version task</h1>
+<p>Create repository:</p>
+<pre><code class="language-text">jenkins-version-demo
+</code></pre>
+<p>Add:</p>
+<pre><code class="language-text">index.html
+</code></pre>
+<p>Create Jenkins Freestyle project:</p>
+<pre><code class="language-text">Jenkins-Version-Demo
+</code></pre>
+<p>Connect it to GitHub.</p>
+<h2 id="build-trigger-1">Build trigger</h2>
+<p>Enable:</p>
+<pre><code class="language-text">GitHub hook trigger for GITScm polling
+</code></pre>
+<h2 id="build-step-2">Build step</h2>
+<p>On macOS:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;===============================&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Jenkins Application Build&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;===============================&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Build Number: <span class="hljs-variable">$BUILD_NUMBER</span>&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Job Name: <span class="hljs-variable">$JOB_NAME</span>&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Build ID: <span class="hljs-variable">$BUILD_ID</span>&quot;</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;===============================&quot;</span>
+</code></pre>
+<hr>
+<h1 id="demonstrate-the-build-numbers">Demonstrate the build numbers</h1>
+<p>First build:</p>
+<pre><code class="language-text">#1
+</code></pre>
+<p>Change application → push:</p>
+<pre><code class="language-text">#2
+</code></pre>
+<p>Change application again → push:</p>
+<pre><code class="language-text">#3
+</code></pre>
+<p>You should be able to demonstrate that each code change creates a new Jenkins build number.</p>
+<hr>
+<h1 id="part-20--artifacts">PART 20 — Artifacts</h1>
+<p>Create a Freestyle job:</p>
+<pre><code class="language-text">ArtifactJob
+</code></pre>
+<p>Build step:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;This is my Jenkins artifact&quot;</span> &gt; artifact.txt
+</code></pre>
+<p>Then:</p>
+<p><strong>Post-build Actions</strong></p>
+<p>→ <strong>Archive the artifacts</strong></p>
+<p>Files to archive:</p>
+<pre><code class="language-text">artifact.txt
+</code></pre>
+<p>Save → Build Now.</p>
+<p>After the build, Jenkins should show the archived artifact.</p>
+<hr>
+<h1 id="part-21--artifact-retention">PART 21 — Artifact retention</h1>
+<p>Go into:</p>
+<p><strong>Configure → General</strong></p>
+<p>Enable:</p>
+<p><strong>Discard old builds</strong></p>
+<p>Then configure:</p>
+<pre><code class="language-text">Days to keep builds
+</code></pre>
+<p>or:</p>
+<pre><code class="language-text">Max # of builds to keep
+</code></pre>
+<hr>
+<h1 id="part-22--fingerprints">PART 22 — Fingerprints</h1>
+<p>Explore:</p>
+<p><strong>See Fingerprints</strong></p>
+<p>You should understand that Jenkins can track artifacts through their fingerprint/checksum information and identify where they have been used.</p>
+<hr>
+<h1 id="part-23--jenkins-security">PART 23 — Jenkins security</h1>
+<p>Go to:</p>
+<p><strong>Manage Jenkins → Security</strong></p>
+<p>Depending on your Jenkins version this may be called:</p>
+<p><strong>Security</strong></p>
+<p>or:</p>
+<p><strong>Configure Global Security</strong></p>
+<p>Make sure Jenkins authentication is enabled.</p>
+<p>The teacher's material describes:</p>
+<pre><code class="language-text">Jenkins&#x27; own user database
+</code></pre>
+<p>and:</p>
+<pre><code class="language-text">Matrix-based Security
+</code></pre>
+<p>with appropriate administrator permissions.</p>
+<h3 id="important">Important</h3>
+<p>Don't experiment with security settings until your practicals are working.</p>
+<p>Otherwise you can accidentally lock yourself out.</p>
+<hr>
+<h1 id="part-24--agents-and-executors">PART 24 — Agents and Executors</h1>
+<p>Modern Jenkins terminology is:</p>
+<pre><code class="language-text">Controller
+Agent
+</code></pre>
+<p>The controller handles Jenkins administration while agents execute builds.</p>
+<p>For your current Mac practical, you can use the local Jenkins executor.</p>
+<p>You do <strong>not</strong> need a second computer just to complete the basic tasks.</p>
+<hr>
+<h1 id="part-25--understand-executors">PART 25 — Understand Executors</h1>
+<p>An executor determines how many builds a node can execute simultaneously.</p>
+<p>You can explore:</p>
+<p><strong>Manage Jenkins → Nodes / Agents</strong></p>
+<p>and inspect the built-in node.</p>
+<p>Don't change the configuration unless your teacher specifically asks you to.</p>
+<hr>
+<h1 id="part-26--understand-triggers">PART 26 — Understand triggers</h1>
+<p>You should now be able to explain these three.</p>
+<h2 id="build-periodically">Build periodically</h2>
+<pre><code class="language-text">Jenkins
+   ↓
+Time arrives
+   ↓
+Build
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-text">H/2 * * * *
+</code></pre>
+<h2 id="poll-scm">Poll SCM</h2>
+<pre><code class="language-text">Jenkins
+   ↓
+Check GitHub
+   ↓
+Did code change?
+   ↓
+Yes → Build
+</code></pre>
+<h2 id="webhook">Webhook</h2>
+<pre><code class="language-text">Developer
+   ↓
+git push
+   ↓
+GitHub
+   ↓
+Webhook
+   ↓
+Jenkins
+   ↓
+Build
+</code></pre>
+<hr>
+<h1 id="part-27--final-recommended-completion-order">PART 27 — Final recommended completion order</h1>
+<h2 id="phase-1--installation">Phase 1 — Installation</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Install Homebrew</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Install JDK 21</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure <code>JAVA_HOME</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Verify Java</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Install Git</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure Git</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Install Jenkins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Start Jenkins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Open <code>localhost:8080</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Unlock Jenkins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Install suggested plugins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Create administrator</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Verify dashboard</li>
+</ul>
+<h2 id="phase-2--jenkins-basics">Phase 2 — Jenkins basics</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Explore Dashboard</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Explore Manage Jenkins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Explore Plugins</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Explore Credentials</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Understand Jobs</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Understand Builds</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Understand Workspace</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Understand Executors</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Understand environment variables</li>
+</ul>
+<h2 id="phase-3--freestyle">Phase 3 — Freestyle</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>HelloWorldJob</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>WorkspaceJob</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>FileCopyJob</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>ParameterizedJob</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>ScheduledJob</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>GitJob</code></li>
+</ul>
+<h2 id="phase-4--pipeline">Phase 4 — Pipeline</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>EchoPipeline</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>BuildTestPipeline</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>FilePipeline</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>UserPipeline</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>ScheduledPipeline</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>GitPipeline</code></li>
+</ul>
+<h2 id="phase-5--automatic-builds">Phase 5 — Automatic builds</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>Jenkins-Polling-Demo</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test SCM polling</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>Jenkins-Webhook-Demo</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure GitHub webhook</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test webhook</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>Jenkins-Pipeline-Demo</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Create Jenkinsfile</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure Pipeline from SCM</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure webhook</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test automatic Pipeline</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> <code>Jenkins-Version-Demo</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Demonstrate Build #1</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Demonstrate Build #2</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Demonstrate Build #3</li>
+</ul>
+<h2 id="phase-6--advanced-jenkins-topics">Phase 6 — Advanced Jenkins topics</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Archive artifact</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Artifact retention</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Fingerprints</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Security</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Credentials</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Executors</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Agents</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Upstream/downstream concepts</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Build triggers</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> GitHub hooks</li>
+</ul>
+<hr>
+<h1 id="windows--macos-command-translation">Windows → macOS command translation</h1>
+<table>
+<thead>
+<tr>
+<th>Teacher's Windows</th>
+<th>Your macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Execute Windows batch command</td>
+<td>Execute shell</td>
+</tr>
+<tr>
+<td><code>%WORKSPACE%</code></td>
+<td><code>$WORKSPACE</code></td>
+</tr>
+<tr>
+<td><code>%BUILD_NUMBER%</code></td>
+<td><code>$BUILD_NUMBER</code></td>
+</tr>
+<tr>
+<td><code>%JOB_NAME%</code></td>
+<td><code>$JOB_NAME</code></td>
+</tr>
+<tr>
+<td><code>%BUILD_ID%</code></td>
+<td><code>$BUILD_ID</code></td>
+</tr>
+<tr>
+<td><code>%USERNAME%</code></td>
+<td><code>$USERNAME</code></td>
+</tr>
+<tr>
+<td><code>%date% %time%</code></td>
+<td><code>$(date)</code></td>
+</tr>
+<tr>
+<td><code>echo ... &gt; C:\...</code></td>
+<td><code>echo ... &gt; &quot;$WORKSPACE/...&quot;</code></td>
+</tr>
+<tr>
+<td><code>copy</code></td>
+<td><code>cp</code></td>
+</tr>
+<tr>
+<td>PowerShell</td>
+<td><code>sh</code></td>
+</tr>
+<tr>
+<td><code>Get-Date</code></td>
+<td><code>date</code></td>
+</tr>
+<tr>
+<td><code>Get-Content</code></td>
+<td><code>cat</code></td>
+</tr>
+<tr>
+<td><code>C:\...</code></td>
+<td><code>/Users/...</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h1 id="start-here">Start here</h1>
+<p>Don't try to complete everything at once.</p>
+<p>Open Terminal and run these three commands:</p>
+<pre><code class="language-bash">brew --version
+</code></pre>
+<pre><code class="language-bash">java -version
+</code></pre>
+<pre><code class="language-bash">git --version
+</code></pre>
+<p>Send me the output of those three commands.</p>
+<p>Then proceed in order:</p>
+<p><strong>JDK → Jenkins installation → first login → plugins → first Freestyle job.</strong></p>
+<p>We should verify each stage before moving to the next one.</p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>

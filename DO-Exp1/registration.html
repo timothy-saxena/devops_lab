@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Wedding Zone</h1>
+    <nav>
+        <a href="index.html">Home</a> |
+        <a href="registration.html">Registration</a> |
+        <a href="login.html">Login</a>
+    </nav>
+    <h2>Registration Form</h2>
+    <form action="thankyou.html" onsubmit="return checkForm()">
+        First Name
+        <input type="text" id="fn" required>
+        Last Name
+        <input type="text" id="ln" required>
+        Mobile Number
+        <input type="text" id="mob" required>
+        Email
+        <input type="text" id="mail" required>
+        Password
+        <input type="password" id="pass" required>
+        Age
+        <input type="number" id="age" required>
+        <p>Role</p>
+        <input type="radio" name="role" required> Bride
+        <input type="radio" name="role"> Groom
+        <p>Facilities</p>
+        <input type="checkbox"> Music
+        <input type="checkbox"> Dinner
+        <input type="checkbox"> Decoration
+        <br><br>
+        <input type="submit" value="Register">
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>

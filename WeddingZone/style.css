@@ -1,0 +1,4 @@
+body{font-family:Arial;background:#fff8f2;text-align:center;}
+nav a{margin:10px;text-decoration:none;}
+input{width:220px;padding:8px;margin:6px;}
+input[type=submit]{background:#c85a54;color:#fff;border:none;}

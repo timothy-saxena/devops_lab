@@ -1,0 +1,45 @@
+body {
+    font-family: Verdana, sans-serif;
+    background: #ffffff;
+    text-align: center;
+}
+
+h1 {
+    color: #8a3d3d;
+}
+
+nav {
+    margin: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #8a3d3d;
+    margin: 8px;
+}
+
+form {
+    width: 320px;
+    margin: auto;
+    text-align: left;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    box-sizing: border-box;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    width: auto;
+    margin-right: 5px;
+}
+
+input[type=submit] {
+    background: #8a3d3d;
+    color: white;
+    border: none;
+    cursor: pointer;
+}

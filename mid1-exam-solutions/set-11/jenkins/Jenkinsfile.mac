@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H/5 * * * *')
+    }
+
+    stages {
+        stage('Record Current Time') {
+            steps {
+                sh 'echo "MonitorPipeline ran at: $(date)"'
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizza Order Form</title>
+</head>
+<body>
+  <h1>Pizza Order Form</h1>
+  <form>
+    <label for="name">Customer name:</label><br>
+    <input id="name" name="name" type="text" required><br><br>
+
+    <label for="size">Pizza size:</label><br>
+    <select id="size" name="size">
+      <option>Small</option>
+      <option>Medium</option>
+      <option>Large</option>
+    </select><br><br>
+
+    <p>Toppings:</p>
+    <label><input type="checkbox" name="topping" value="Cheese"> Extra cheese</label><br>
+    <label><input type="checkbox" name="topping" value="Mushroom"> Mushroom</label><br>
+    <label><input type="checkbox" name="topping" value="Corn"> Sweet corn</label><br><br>
+
+    <label for="quantity">Quantity:</label><br>
+    <input id="quantity" name="quantity" type="number" min="1" value="1" required><br><br>
+
+    <label for="address">Delivery address:</label><br>
+    <textarea id="address" name="address" rows="4" cols="35" required></textarea><br><br>
+
+    <button type="submit">Place Order</button>
+  </form>
+</body>
+</html>

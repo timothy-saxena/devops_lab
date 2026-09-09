@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Compile') {
+            steps {
+                echo 'Compiling application...'
+            }
+        }
+        stage('Verify') {
+            steps {
+                echo 'Verifying application...'
+            }
+        }
+        stage('Release') {
+            steps {
+                echo 'Releasing application...'
+            }
+        }
+    }
+}

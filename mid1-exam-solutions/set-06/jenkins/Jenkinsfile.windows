@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Generate Report') {
+            steps {
+                bat 'echo Jenkins report generated successfully. > report.txt'
+                echo 'Report generated inside workspace.'
+            }
+        }
+        stage('Display Report') {
+            steps {
+                bat 'type report.txt'
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H/5 * * * *')
+    }
+
+    stages {
+        stage('Record Current Time') {
+            steps {
+                bat 'echo MonitorPipeline ran at: %DATE% %TIME%'
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+body {
+    font-family: Arial;
+    background: #f8f8f8;
+    text-align: center;
+}
+
+nav {
+    background: #b30059;
+    padding: 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 20px;
+    font-weight: bold;
+}
+
+.box {
+    width: 350px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px gray;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    width: auto;
+}
+
+input[type=submit] {
+    background: #b30059;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background: #800040;
+}

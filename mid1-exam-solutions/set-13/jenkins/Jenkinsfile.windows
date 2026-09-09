@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code from GitHub...'
+                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/repository-pipeline-demo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Simulating application build...'
+                bat 'echo Build completed successfully.'
+            }
+        }
+        stage('Latest Commit') {
+            steps {
+                echo 'Latest Git commit message:'
+                bat 'git log -1 --pretty=%B'
+            }
+        }
+    }
+}

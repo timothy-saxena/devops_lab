@@ -1,0 +1,10 @@
+services:
+  ran_num:
+    build: .
+    container_name: compose_ran_num_container
+    command: ["python", "-u", "ran_num.py"]
+
+  guess_num:
+    build: .
+    container_name: compose_guess_num_container
+    command: ["python", "-u", "guess_num.py"]

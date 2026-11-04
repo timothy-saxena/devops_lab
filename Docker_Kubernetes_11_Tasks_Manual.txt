@@ -175,7 +175,7 @@ Jobs can also be designed to consume supplied input, but our interactive
 practice uses Pods to keep the original input() and Scanner code simple.
 
 ==============================================================================
-01. PYTHON - Generate a random list of 10 numbers
+**01. PYTHON - Generate a random list of 10 numbers
 ==============================================================================
 
 QUESTION: PYTHON - Generate a random list of 10 numbers
@@ -269,7 +269,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-02. PYTHON - Compute maximum, minimum, and average from user input
+**02. PYTHON - Compute maximum, minimum, and average from user input
 ==============================================================================
 
 QUESTION: PYTHON - Compute maximum, minimum, and average from user input
@@ -357,7 +357,7 @@ Enter values separated by spaces, not commas. Text such as ten raises a
 ValueError in this deliberately small lab program; rerun with numeric input.
 
 ==============================================================================
-03. PYTHON - Display a funny dialogue for an entered actor name
+**03. PYTHON - Display a funny dialogue for an entered actor name
 ==============================================================================
 
 QUESTION: PYTHON - Display a funny dialogue for an entered actor name
@@ -438,7 +438,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-04. JAVA - Use a parameterized constructor for addition and multiplication
+**04. JAVA - Use a parameterized constructor for addition and multiplication
 ==============================================================================
 
 QUESTION: JAVA - Use a parameterized constructor for addition and multiplication
@@ -544,7 +544,7 @@ build. CMD ["java", "App"] runs the compiled class when the container starts.
 Use ordinary small integers; this example uses Java int arithmetic.
 
 ==============================================================================
-05. JAVA - Demonstrate single inheritance
+**05. JAVA - Demonstrate single inheritance
 ==============================================================================
 
 QUESTION: JAVA - Demonstrate single inheritance
@@ -645,7 +645,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-06. JAVA - Check whether an entered word or number is a palindrome
+**06. JAVA - Check whether an entered word or number is a palindrome
 ==============================================================================
 
 QUESTION: JAVA - Check whether an entered word or number is a palindrome
@@ -741,7 +741,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-07. NODE.JS - Display Hello Docker
+**07. NODE.JS - Display Hello Docker
 ==============================================================================
 
 QUESTION: NODE.JS - Display Hello Docker
@@ -829,7 +829,7 @@ standalone Pod named n1 is in CrashLoopBackOff from earlier practice, inspect
 it and remove that old Pod with kubectl delete pod n1. Keep the new Job n1.
 
 ==============================================================================
-08. NODE.JS - Display student name, roll number, and branch
+**08. NODE.JS - Display student name, roll number, and branch
 ==============================================================================
 
 QUESTION: NODE.JS - Display student name, roll number, and branch
@@ -923,7 +923,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-09. NODE.JS - HTTP server showing Welcome to DevOps Lab on port 3000
+**09. NODE.JS - HTTP server showing Welcome to DevOps Lab on port 3000
 ==============================================================================
 
 QUESTION: NODE.JS - HTTP server showing Welcome to DevOps Lab on port 3000
@@ -1094,7 +1094,7 @@ Pods check the registry. Refresh the browser after the new connection is ready.
 Do not also start docker run on the same local port while forwarding is active.
 
 ==============================================================================
-10. NODE.JS - Display the current date and time
+**10. NODE.JS - Display the current date and time
 ==============================================================================
 
 QUESTION: NODE.JS - Display the current date and time
@@ -1189,7 +1189,7 @@ TERMINAL COMMANDS (run one line at a time):
 
 
 ==============================================================================
-11. HTML - Create a simple registration page, Dockerize it, and deploy it
+**11. HTML - Create a simple registration page, Dockerize it, and deploy it
 ==============================================================================
 
 QUESTION: HTML - Create a simple registration page, Dockerize it, and deploy it

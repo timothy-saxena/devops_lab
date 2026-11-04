@@ -2022,3 +2022,202 @@ Validation completed while preparing this manual:
   creating this manual. GitHub publishing was not performed.
 
 END OF MANUAL
+
+
+==============================================================================
+DOCKER COMPOSE - COMPLETE LAB INSTRUCTIONS
+==============================================================================
+
+Docker Compose describes how to build and run one or more Docker services in
+one YAML file. It saves repeating long docker build/run commands. It can manage
+several containers together; it does NOT deploy them into Kubernetes.
+
+Dockerfile: how to build an image.
+compose.yaml: how Docker should build/run the services together.
+deployment.yaml + service.yaml: how Kubernetes should run/expose an application.
+A Compose service is a container configuration; it is not a Kubernetes Service.
+
+Use docker compose (with a space), not the older docker-compose command.
+The following commands work in Mac Terminal and Windows PowerShell with Docker
+Desktop running in Linux-container mode. Check availability:
+    docker compose version
+
+A. RUN THE TWO WEB TASKS TOGETHER
+
+Keep your existing Node HTTP-server code/Dockerfile in n3 and your HTML
+registration page/Nginx Dockerfile in reg.
+Create compose.yaml in the PRACTICE ROOT, alongside the n3 and reg folders:
+
+7.mid2_prac/
+    compose.yaml
+    n3/
+        app.js
+        Dockerfile
+    reg/
+        index.html
+        Dockerfile
+
+FILE: compose.yaml (practice root)
+--- BEGIN FILE CONTENT ---
+services:
+  node-web:
+    build: ./n3
+    image: timothysaxena/n3:latest
+    ports:
+      - "8090:3000"
+  registration:
+    build: ./reg
+    image: timothysaxena/reg:latest
+    ports:
+      - "8091:80"
+--- END FILE CONTENT ---
+
+services lists the applications. node-web and registration are service names.
+build points to each folder containing a Dockerfile and its source files.
+image assigns the resulting image its Docker Hub name.
+ports uses "COMPUTER_PORT:CONTAINER_PORT"; quote the mapping as shown.
+Compose creates a project network. These two examples are independent; neither
+needs depends_on. Both containers can use internal ports independently, but
+published computer ports must not conflict.
+
+Use 8090 and 8091 here to distinguish Compose from the Kubernetes examples on
+8080 and 8081. No kubectl port-forward is needed for Compose's published ports.
+
+Run these commands from the practice root, one at a time:
+    docker compose config --quiet
+    docker compose up -d --build
+    docker compose ps
+    docker compose logs --tail 20
+
+config validates the file. up --build builds and creates/starts the containers.
+-d runs them in the background. ps lists their state. logs shows their output.
+
+Expected: both services show Up (wording can vary).
+Open http://localhost:8090 -> Welcome to DevOps Lab
+Open http://localhost:8091 -> Registration Form
+
+Watch one service's logs:
+    docker compose logs -f node-web
+Ctrl+C here stops following the logs; background containers remain running.
+With docker compose up WITHOUT -d, Ctrl+C instead stops the attached services.
+
+Upload the named images after building:
+    docker login
+    docker compose push
+
+Update after editing n3/app.js:
+    docker compose up -d --build node-web
+    docker compose push node-web
+Refresh http://localhost:8090. For changes in both apps, omit node-web.
+Saving source or using docker compose restart alone does not rebuild the image.
+
+Stop and remove this Compose project's containers and default network:
+    docker compose down
+This does not delete your source files or Docker Hub images, and it does not
+stop your separate Kubernetes workloads. No volume-deletion option is needed.
+
+B. RUN A PRINT-AND-EXIT TASK WITH COMPOSE
+
+As a separate example, create compose.yaml INSIDE py1, beside app.py/Dockerfile.
+Do not replace the web file in the practice root with this example.
+
+FILE: compose.yaml (inside py1)
+--- BEGIN FILE CONTENT ---
+services:
+  app:
+    build: .
+    image: timothysaxena/py-t-1:latest
+--- END FILE CONTENT ---
+
+From py1:
+    docker compose -f compose.yaml config --quiet
+    docker compose -f compose.yaml run --rm --build app
+    docker compose -f compose.yaml push app
+
+Expected: ten random numbers, then the program exits. run creates a one-off
+container; --rm removes it when finished. Repeat run for another execution.
+The image remains. If desired, use compose down afterward to remove this
+project's unused network. It is not a web application; no ports are required.
+
+C. RUN A KEYBOARD-INPUT TASK WITH COMPOSE
+
+Create compose.yaml inside py2, beside its existing app.py and Dockerfile:
+--- BEGIN FILE CONTENT ---
+services:
+  app:
+    build: .
+    image: timothysaxena/py-t-2:latest
+    stdin_open: true
+    tty: true
+--- END FILE CONTENT ---
+
+stdin_open keeps input open; tty allocates a terminal. From py2:
+    docker compose -f compose.yaml config --quiet
+    docker compose -f compose.yaml run --rm --build app
+
+Enter: 10 20 30
+Expected: Maximum 30.0, Minimum 10.0, Average 20.0.
+Use run for these input-based console exercises rather than up -d.
+
+To adapt this per-folder example, keep the correct existing Dockerfile and
+change only image. The Compose service can remain named app:
+Folder   Image                                  Input options needed?
+py1      timothysaxena/py-t-1:latest             No
+py2      timothysaxena/py-t-2:latest             Yes
+py3      timothysaxena/py-t-3:latest             Yes
+j1       timothysaxena/j1:latest                 Yes
+j2       timothysaxena/j2:latest                 Yes
+j3       timothysaxena/j3:latest                 Yes
+n1       timothysaxena/n1:latest                 No
+n2       timothysaxena/n2:latest                 No
+n4       timothysaxena/n4:latest                 No
+
+D. COMPOSE AND KUBERNETES SHARE IMAGES, NOT RUNNING CONTAINERS
+
+Compose can build/push timothysaxena/n3:latest. Your existing Kubernetes
+Deployment can use that same image. Pushing does not update its current Pods.
+After a Compose build/push, update the existing Kubernetes app with:
+    kubectl rollout restart deployment/n3
+    kubectl rollout status deployment/n3 --timeout=120s
+Then reconnect its port-forward (stop any old forwarding with Ctrl+C first):
+    kubectl port-forward service/n3-service 8080:80
+Keep this terminal running and open http://localhost:8080.
+Do not run kubectl apply -f compose.yaml: Compose and Kubernetes use different
+file formats. To save Compose work on GitHub, add the root compose.yaml and
+any task-folder Compose files to your Git commit. For example, from the root:
+    git add -- compose.yaml
+Inspect git diff --cached before committing and pushing to your existing
+GitHub repository.
+
+E. COMMON COMPOSE ERRORS
+- No configuration file: check the filename and current folder. Use
+  docker compose -f compose.yaml ... from the folder containing that file.
+- Unexpected services start: Compose can search parent folders for its default
+  file. An explicit -f compose.yaml avoids silently using the parent's web file.
+- Build context/path missing: ./n3 and ./reg are relative to the root Compose
+  file. For a per-task Compose file, build: . refers to that task folder.
+- Port already allocated: stop the known old process or choose another LEFT
+  side port, for example "8092:3000". Do not change the server's port accidentally.
+- Code changes absent: save, then docker compose up -d --build for web apps;
+  use run --rm --build for a new console execution. restart is not rebuild.
+- Input missing/EOF: use the interactive config and compose run in a terminal.
+- Printed program is Exited (0): this is successful completion, not a crash.
+- Web page unavailable after compose run: run does not publish configured
+  service ports by default. Use compose up -d --build for these web examples.
+- Push skips a service: ensure image contains your account-prefixed name;
+  build alone without image may create only a local project image name.
+- Obsolete version warning: no top-level version field is required here.
+
+QUICK COMMANDS
+    docker compose config --quiet     Validate configuration
+    docker compose up -d --build      Build and start web services
+    docker compose ps                Show service containers
+    docker compose logs -f           Follow output (Ctrl+C ends following)
+    docker compose run --rm --build app   Run one console task
+    docker compose push              Upload named images
+    docker compose down              Stop/remove this project's containers
+
+Validation: all three Compose examples were accepted by docker compose config.
+These checks did not start containers, publish images, or change Kubernetes.
+
+END OF COMPOSE INSTRUCTIONS

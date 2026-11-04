@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: node-task3-deployment
+    labels:
+        app: node-task3
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: node-task3
+    template:
+        metadata:
+            labels:
+                app: node-task3
+        spec:
+            containers:
+                - name: node-task3-container
+                  image: timothysaxena/node-task3:latest
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 3000
+                  readinessProbe:
+                      httpGet:
+                          path: /
+                          port: 3000
+                      initialDelaySeconds: 2
+                      periodSeconds: 5

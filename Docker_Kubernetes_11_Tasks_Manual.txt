@@ -1,0 +1,2024 @@
+
+==============================================================================
+DOCKER AND KUBERNETES LAB MANUAL - ALL 11 TASKS
+==============================================================================
+
+Prepared for Timothy Saxena | 5 November 2026
+Docker Hub account: timothysaxena
+Primary environment: Docker Desktop with Linux containers and local Kubernetes.
+Commands are suitable for macOS Terminal and Windows PowerShell unless marked.
+
+PURPOSE
+One reference for the questions, complete source files, Dockerfiles, Kubernetes
+configuration, terminal commands, expected results, and common error fixes.
+
+This manual uses the teacher's requested outputs, such as "Hello Docker" and
+"Welcome to DevOps Lab". It does not overwrite your personal practice files.
+
+HOW TO USE THIS FILE
+1. Read Section 00 once. Use Ctrl+F (Windows) or Command+F (Mac) to search
+   for headings such as "09. NODE.JS" or an error message.
+2. Open the folder named in the required question in VS Code.
+3. Create each listed file. Copy only the text between the file-content markers;
+   do not copy the markers themselves.
+4. Save all files before building. Run terminal commands one line at a time.
+5. When an input program asks a question, enter the sample input before running
+   the next command. Do not paste a whole command sequence into an input prompt.
+6. Output shown is expected output, not a record of a new Docker Hub upload.
+7. A browser page requires a running web server; a console task uses logs.
+
+CONTENTS
+00  Setup, names, folders, and Windows/Mac differences
+01  Python: random list of 10 numbers
+02  Python: maximum, minimum, and average from user input
+03  Python: actor name to funny dialogue
+04  Java: parameterized constructor, addition, multiplication
+05  Java: single inheritance
+06  Java: palindrome check
+07  Node.js: Hello Docker
+08  Node.js: student details
+09  Node.js: HTTP server - Deployment and Service explained
+10  Node.js: current date and time
+11  HTML: registration page using Nginx
+12  Understand the files and commands
+13  Repeat runs, code updates, and safe cleanup
+14  Common errors and exact fixes
+15  Save the source files on GitHub
+16  Exam quick-reference commands and viva answers
+17  Sources and validation notes
+
+==============================================================================
+00. SETUP, NAMES, FOLDERS, AND WINDOWS/MAC DIFFERENCES
+==============================================================================
+
+A. Prerequisites
+- Docker Desktop must be installed and running.
+- On Windows, use Linux containers for all images in this manual.
+- Enable/create a local Kubernetes cluster in Docker Desktop and wait until it
+  is running. Recent versions have Kubernetes > Create cluster; some versions
+  show Settings > Kubernetes > Enable Kubernetes. Do not reset an existing
+  cluster just to do these exercises.
+- You need internet access for initial image downloads and Docker Hub uploads.
+- Use VS Code or another plain-text editor, not a rich-text word processor.
+- Git is needed only for the GitHub section.
+- Python, Java, Node.js and Nginx do not need separate host installations:
+  they are supplied inside the Docker images.
+
+B. Check the tools
+
+TERMINAL COMMANDS (run one line at a time):
+    docker version
+    kubectl config get-contexts
+    kubectl get nodes
+
+Expected: docker version shows both Client and Server information; kubectl
+shows your intended local cluster and at least one node with status Ready.
+
+For your Mac, the context was docker-desktop. If it exists but is not selected:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl config use-context docker-desktop
+
+On a college computer using Minikube, the intended context may instead be
+minikube. Use the local cluster actually provided by the college. Contexts
+select clusters; they are not application names.
+
+The task commands below assume namespace default. Set it once for your selected
+local context if needed:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl config set-context --current --namespace=default
+
+C. Sign in once to Docker Hub
+
+TERMINAL COMMANDS (run one line at a time):
+    docker login
+
+Follow the browser/device-code instructions and sign in as timothysaxena.
+Expected: Login Succeeded. Use public Docker Hub repositories for these lab
+images so Kubernetes can pull them without additional registry credentials.
+If a push asks you to create a repository, create the matching repository under
+timothysaxena on Docker Hub and choose Public, then repeat the push.
+
+D. Folder and image names used consistently in THIS manual
+
+Q    Folder  Image                               Kubernetes resource
+01   py1     timothysaxena/py-t-1:latest          Job py-t-1
+02   py2     timothysaxena/py-t-2:latest          Pod py-t-2
+03   py3     timothysaxena/py-t-3:latest          Pod py-t-3
+04   j1      timothysaxena/j1:latest              Pod j1
+05   j2      timothysaxena/j2:latest              Pod j2
+06   j3      timothysaxena/j3:latest              Pod j3
+07   n1      timothysaxena/n1:latest              Job n1
+08   n2      timothysaxena/n2:latest              Job n2
+09   n3      timothysaxena/n3:latest              Deployment n3, Service n3-service
+10   n4      timothysaxena/n4:latest              Job n4
+11   reg     timothysaxena/reg:latest             Deployment reg, Service reg-service
+
+These short Java/Node names follow your actual practice folder. Earlier chat
+examples also used java-t-1 and node-t-1; those names are valid but are NOT the
+names used in this manual. Follow one naming scheme consistently. Existing
+images with the earlier names are not automatically renamed.
+
+An image name and a folder name do not have to match. They only need to match
+where the same image is referenced in build, push, YAML, and run commands.
+
+Your Mac practice root:
+/Users/timothysaxena/Downloads/MGIT/Sem-V/7. DevOpsL/7.mid2_prac
+
+Open that folder in VS Code. Create any missing task folders inside it.
+To create a missing folder from the practice root, for example:
+
+TERMINAL COMMANDS (run one line at a time):
+    mkdir py1
+    cd py1
+
+If the folder already exists, do not recreate it: open it and use its terminal.
+Use cd .. to return to the practice root before entering another task folder.
+Every question below assumes its terminal is already in the named task folder.
+
+Mac example, entering the existing Node server folder:
+    cd "/Users/timothysaxena/Downloads/MGIT/Sem-V/7. DevOpsL/7.mid2_prac/n3"
+
+Windows example (replace YOUR_NAME and use your actual folder):
+    cd "C:\Users\YOUR_NAME\Documents\docker-kubernetes-lab\n3"
+
+E. Important differences and conventions
+- macOS: Terminal/zsh. Windows: PowerShell. Commands here use single lines, so
+  you do not need different multiline continuation characters.
+- Paths with spaces must be quoted. Dockerfile paths such as /app are INSIDE
+  Linux containers and stay the same on both operating systems.
+- On Windows, enable file-name extensions in Explorer. Dockerfile must not be
+  Dockerfile.txt. App.java must not be App.java.txt. Use the exact capital A.
+- YAML uses spaces, not tabs. Keep indentation exactly as shown.
+- The final dot in docker build means use the CURRENT folder as build context.
+- A Mac and a college PC may have different processor architectures. Build
+  these same source files on the college PC and push that PC's image before
+  deploying to its local cluster. Do not assume an Apple Silicon-only image
+  can run on an Intel/AMD college node. Reusing :latest replaces that tag's
+  registry target; rebuild/push again when switching machines as needed.
+- This manual uses mutable :latest tags for a simple lab workflow. It is just
+  a tag name, not an automatic source-code synchronizer.
+- Build directly as timothysaxena/NAME:latest to avoid a separate tag command.
+  If you already have local py-t-1:latest, the equivalent extra step is:
+      docker tag py-t-1:latest timothysaxena/py-t-1:latest
+- Optional local-output view: Mac ls, Windows dir. These list folder contents.
+
+F. Three Kubernetes patterns
+1. Non-interactive program that prints and exits: Job + kubectl logs.
+2. Program that asks for keyboard input: interactive Pod using kubectl run -it
+   --restart=Never. This CLI creates a Pod; no YAML file is required for that
+   route. Record its command with the task when saving to GitHub.
+3. Web application that stays running: Deployment + Service + port-forward.
+
+Jobs can also be designed to consume supplied input, but our interactive
+practice uses Pods to keep the original input() and Scanner code simple.
+
+==============================================================================
+01. PYTHON - Generate a random list of 10 numbers
+==============================================================================
+
+QUESTION: PYTHON - Generate a random list of 10 numbers
+Folder: py1
+Image: timothysaxena/py-t-1:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.py
+--- BEGIN FILE CONTENT ---
+import random
+
+numbers = []
+
+for i in range(10):
+    number = random.randint(1, 100)
+    numbers.append(number)
+
+print("Random list:", numbers)
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+Start with an empty list; generate and append one number ten times.
+range(10) gives ten iterations. randint(1, 100) includes both endpoints.
+Duplicates are allowed: random does not mean unique. random is included in
+Python, so requirements.txt and pip install are unnecessary.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM python:3.10-slim
+WORKDIR /app
+COPY app.py .
+CMD ["python", "app.py"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/py-t-1:latest .
+    docker run --rm timothysaxena/py-t-1:latest
+
+
+EXPECTED OUTPUT / TEST:
+Example only; your numbers should differ:
+Random list: [17, 82, 4, 61, 25, 25, 98, 43, 7, 56]
+There must be exactly 10 integers, each between 1 and 100.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/py-t-1:latest
+
+C. Create the Kubernetes Job configuration.
+
+FILE: job.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: py-t-1
+spec:
+  template:
+    spec:
+      containers:
+        - name: python
+          image: timothysaxena/py-t-1:latest
+      restartPolicy: Never
+--- END FILE CONTENT ---
+
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/py-t-1 --timeout=120s
+    kubectl logs job/py-t-1
+
+Expected: Job completes; logs show the program output. Random values or
+timestamps will vary. If the wait times out, inspect the error before continuing.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get job py-t-1
+    kubectl get pods -l job-name=py-t-1
+
+Expected: COMPLETIONS 1/1 and a Pod with status Completed.
+To run this Job again, delete its completed instance and apply its file again.
+Applying an unchanged completed Job does NOT execute it a second time:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete job py-t-1 --ignore-not-found
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/py-t-1 --timeout=120s
+    kubectl logs job/py-t-1
+
+
+==============================================================================
+02. PYTHON - Compute maximum, minimum, and average from user input
+==============================================================================
+
+QUESTION: PYTHON - Compute maximum, minimum, and average from user input
+Folder: py2
+Image: timothysaxena/py-t-2:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.py
+--- BEGIN FILE CONTENT ---
+values = input("Enter numbers separated by spaces: ").split()
+
+numbers = []
+for value in values:
+    numbers.append(float(value))
+
+if numbers:
+    print("Maximum:", max(numbers))
+    print("Minimum:", min(numbers))
+    print("Average:", sum(numbers) / len(numbers))
+else:
+    print("No numbers entered.")
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+input() returns text. split() separates it at whitespace.
+float() converts each item into a number, including decimal values.
+max/min find the extremes. Average = sum of the values / number of values.
+if numbers prevents max/min on an empty list and division by zero.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM python:3.10-slim
+WORKDIR /app
+COPY app.py .
+CMD ["python", "app.py"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/py-t-2:latest .
+    docker run --rm -it timothysaxena/py-t-2:latest
+
+
+EXPECTED OUTPUT / TEST:
+Input: 10 20 30
+Maximum: 30.0
+Minimum: 10.0
+Average: 20.0
+
+Additional check: input -5 0 5 -> maximum 5.0, minimum -5.0, average 0.0.
+Blank input -> No numbers entered.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/py-t-2:latest
+
+C. Run the same program in an interactive Kubernetes Pod.
+Wait for the container to start, then enter the same sample inputs.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl run py-t-2 --image=timothysaxena/py-t-2:latest --restart=Never -it
+
+Expected: the same prompts and calculations/dialogue as the Docker run.
+The program exits after receiving input and printing its result.
+If the first prompt is not visible after attachment, type the expected input
+and press Enter; do not type a shell command into the program.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get pod py-t-2
+    kubectl logs py-t-2
+
+Expected Pod status after success: Completed. No browser page is involved.
+Logs may also contain echoed input because a terminal was allocated.
+To repeat or after changing code: rebuild and push if needed, then delete
+only this old Pod and create a new one:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete pod py-t-2 --ignore-not-found
+    kubectl run py-t-2 --image=timothysaxena/py-t-2:latest --restart=Never -it
+
+TASK-SPECIFIC NOTES
+Enter values separated by spaces, not commas. Text such as ten raises a
+ValueError in this deliberately small lab program; rerun with numeric input.
+
+==============================================================================
+03. PYTHON - Display a funny dialogue for an entered actor name
+==============================================================================
+
+QUESTION: PYTHON - Display a funny dialogue for an entered actor name
+Folder: py3
+Image: timothysaxena/py-t-3:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.py
+--- BEGIN FILE CONTENT ---
+actor = input("Enter actor name: ").strip().lower()
+
+dialogues = {
+    "brahmanandam": "My brain has stopped working. Please restart!",
+    "ali": "I came for lunch, not for this confusion!",
+    "sunil": "My confidence is high, but my preparation is zero!"
+}
+
+print(dialogues.get(actor, "No dialogue available for this actor."))
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+A dictionary associates actor names with messages.
+strip() removes surrounding spaces. lower() makes matching case-insensitive.
+get(actor, fallback) returns a stored message or the fallback for an unknown name.
+These are sample humorous lines, not verified quotations from films.
+You may replace them with suitable dialogues you know.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM python:3.10-slim
+WORKDIR /app
+COPY app.py .
+CMD ["python", "app.py"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/py-t-3:latest .
+    docker run --rm -it timothysaxena/py-t-3:latest
+
+
+EXPECTED OUTPUT / TEST:
+Input: Ali
+I came for lunch, not for this confusion!
+
+Input on another run: unknown
+No dialogue available for this actor.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/py-t-3:latest
+
+C. Run the same program in an interactive Kubernetes Pod.
+Wait for the container to start, then enter the same sample inputs.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl run py-t-3 --image=timothysaxena/py-t-3:latest --restart=Never -it
+
+Expected: the same prompts and calculations/dialogue as the Docker run.
+The program exits after receiving input and printing its result.
+If the first prompt is not visible after attachment, type the expected input
+and press Enter; do not type a shell command into the program.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get pod py-t-3
+    kubectl logs py-t-3
+
+Expected Pod status after success: Completed. No browser page is involved.
+Logs may also contain echoed input because a terminal was allocated.
+To repeat or after changing code: rebuild and push if needed, then delete
+only this old Pod and create a new one:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete pod py-t-3 --ignore-not-found
+    kubectl run py-t-3 --image=timothysaxena/py-t-3:latest --restart=Never -it
+
+
+==============================================================================
+04. JAVA - Use a parameterized constructor for addition and multiplication
+==============================================================================
+
+QUESTION: JAVA - Use a parameterized constructor for addition and multiplication
+Folder: j1
+Image: timothysaxena/j1:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: App.java
+--- BEGIN FILE CONTENT ---
+import java.util.Scanner;
+
+public class App {
+    int a, b;
+
+    App(int x, int y) {
+        a = x;
+        b = y;
+    }
+
+    void calculate() {
+        System.out.println("Addition: " + (a + b));
+        System.out.println("Multiplication: " + (a * b));
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter first number: ");
+        int x = sc.nextInt();
+
+        System.out.print("Enter second number: ");
+        int y = sc.nextInt();
+
+        App obj = new App(x, y);
+        obj.calculate();
+
+        sc.close();
+    }
+}
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+A constructor has the class name and no return type, not even void.
+new App(x, y) creates an object and calls its constructor with two values.
+The constructor stores the values in fields a and b. calculate() uses them.
+Parentheses around (a + b) perform arithmetic before string concatenation.
+Scanner reads input; nextInt() expects an integer; main() is the entry point.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY App.java .
+RUN javac App.java
+CMD ["java", "App"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/j1:latest .
+    docker run --rm -it timothysaxena/j1:latest
+
+
+EXPECTED OUTPUT / TEST:
+Enter first number: 6
+Enter second number: 4
+Addition: 10
+Multiplication: 24
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/j1:latest
+
+C. Run the same program in an interactive Kubernetes Pod.
+Wait for the container to start, then enter the same sample inputs.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl run j1 --image=timothysaxena/j1:latest --restart=Never -it
+
+Expected: the same prompts and calculations/dialogue as the Docker run.
+The program exits after receiving input and printing its result.
+If the first prompt is not visible after attachment, type the expected input
+and press Enter; do not type a shell command into the program.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get pod j1
+    kubectl logs j1
+
+Expected Pod status after success: Completed. No browser page is involved.
+Logs may also contain echoed input because a terminal was allocated.
+To repeat or after changing code: rebuild and push if needed, then delete
+only this old Pod and create a new one:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete pod j1 --ignore-not-found
+    kubectl run j1 --image=timothysaxena/j1:latest --restart=Never -it
+
+TASK-SPECIFIC NOTES
+The filename must be App.java. RUN javac App.java compiles during the image
+build. CMD ["java", "App"] runs the compiled class when the container starts.
+Use ordinary small integers; this example uses Java int arithmetic.
+
+==============================================================================
+05. JAVA - Demonstrate single inheritance
+==============================================================================
+
+QUESTION: JAVA - Demonstrate single inheritance
+Folder: j2
+Image: timothysaxena/j2:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: App.java
+--- BEGIN FILE CONTENT ---
+import java.util.Scanner;
+
+class Person {
+    String name;
+
+    void showName() {
+        System.out.println("Name: " + name);
+    }
+}
+
+class Student extends Person {
+    void showRole() {
+        System.out.println("Role: Student");
+    }
+}
+
+public class App {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Student student = new Student();
+
+        System.out.print("Enter student name: ");
+        student.name = sc.nextLine();
+
+        student.showName();
+        student.showRole();
+
+        sc.close();
+    }
+}
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+Person is the parent class. Student extends Person is the child class.
+The Student object uses inherited name and showName(), plus its own showRole().
+This is single inheritance: Student directly extends one parent, Person.
+All classes are in App.java; only App is public. javac creates all needed
+class files from this source file. nextLine() accepts a full name with spaces.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY App.java .
+RUN javac App.java
+CMD ["java", "App"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/j2:latest .
+    docker run --rm -it timothysaxena/j2:latest
+
+
+EXPECTED OUTPUT / TEST:
+Enter student name: Timothy Saxena
+Name: Timothy Saxena
+Role: Student
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/j2:latest
+
+C. Run the same program in an interactive Kubernetes Pod.
+Wait for the container to start, then enter the same sample inputs.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl run j2 --image=timothysaxena/j2:latest --restart=Never -it
+
+Expected: the same prompts and calculations/dialogue as the Docker run.
+The program exits after receiving input and printing its result.
+If the first prompt is not visible after attachment, type the expected input
+and press Enter; do not type a shell command into the program.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get pod j2
+    kubectl logs j2
+
+Expected Pod status after success: Completed. No browser page is involved.
+Logs may also contain echoed input because a terminal was allocated.
+To repeat or after changing code: rebuild and push if needed, then delete
+only this old Pod and create a new one:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete pod j2 --ignore-not-found
+    kubectl run j2 --image=timothysaxena/j2:latest --restart=Never -it
+
+
+==============================================================================
+06. JAVA - Check whether an entered word or number is a palindrome
+==============================================================================
+
+QUESTION: JAVA - Check whether an entered word or number is a palindrome
+Folder: j3
+Image: timothysaxena/j3:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: App.java
+--- BEGIN FILE CONTENT ---
+import java.util.Scanner;
+
+public class App {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter a word or number: ");
+        String text = sc.nextLine().toLowerCase();
+        String reversed = "";
+
+        for (int i = text.length() - 1; i >= 0; i--) {
+            reversed = reversed + text.charAt(i);
+        }
+
+        if (text.equals(reversed)) {
+            System.out.println("Palindrome");
+        } else {
+            System.out.println("Not a palindrome");
+        }
+
+        sc.close();
+    }
+}
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+A palindrome has the same characters forward and backward.
+Start at length - 1, move backward using i--, and append charAt(i) to reversed.
+equals() compares Java string contents; do not use == for this test.
+toLowerCase() ignores case. Numeric input is treated as text, which also lets
+the same code check words. Spaces/punctuation are not removed in this version.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY App.java .
+RUN javac App.java
+CMD ["java", "App"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/j3:latest .
+    docker run --rm -it timothysaxena/j3:latest
+
+
+EXPECTED OUTPUT / TEST:
+Input: madam  -> Palindrome
+Input: 121    -> Palindrome
+Input: hello  -> Not a palindrome
+Input: Madam  -> Palindrome
+Use one input per run.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/j3:latest
+
+C. Run the same program in an interactive Kubernetes Pod.
+Wait for the container to start, then enter the same sample inputs.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl run j3 --image=timothysaxena/j3:latest --restart=Never -it
+
+Expected: the same prompts and calculations/dialogue as the Docker run.
+The program exits after receiving input and printing its result.
+If the first prompt is not visible after attachment, type the expected input
+and press Enter; do not type a shell command into the program.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get pod j3
+    kubectl logs j3
+
+Expected Pod status after success: Completed. No browser page is involved.
+Logs may also contain echoed input because a terminal was allocated.
+To repeat or after changing code: rebuild and push if needed, then delete
+only this old Pod and create a new one:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete pod j3 --ignore-not-found
+    kubectl run j3 --image=timothysaxena/j3:latest --restart=Never -it
+
+
+==============================================================================
+07. NODE.JS - Display Hello Docker
+==============================================================================
+
+QUESTION: NODE.JS - Display Hello Docker
+Folder: n1
+Image: timothysaxena/n1:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.js
+--- BEGIN FILE CONTENT ---
+console.log("Hello Docker");
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+Node.js executes JavaScript outside the browser. console.log prints to the
+terminal. node app.js runs this file. No separate compile command is needed.
+There are no external dependencies, so no package.json or npm install is needed.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM node:24-slim
+WORKDIR /app
+COPY app.js .
+CMD ["node", "app.js"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n1:latest .
+    docker run --rm timothysaxena/n1:latest
+
+
+EXPECTED OUTPUT / TEST:
+Hello Docker
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/n1:latest
+
+C. Create the Kubernetes Job configuration.
+
+FILE: job.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: n1
+spec:
+  template:
+    spec:
+      containers:
+        - name: node
+          image: timothysaxena/n1:latest
+      restartPolicy: Never
+--- END FILE CONTENT ---
+
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n1 --timeout=120s
+    kubectl logs job/n1
+
+Expected: Job completes; logs show the program output. Random values or
+timestamps will vary. If the wait times out, inspect the error before continuing.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get job n1
+    kubectl get pods -l job-name=n1
+
+Expected: COMPLETIONS 1/1 and a Pod with status Completed.
+To run this Job again, delete its completed instance and apply its file again.
+Applying an unchanged completed Job does NOT execute it a second time:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete job n1 --ignore-not-found
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n1 --timeout=120s
+    kubectl logs job/n1
+
+TASK-SPECIFIC NOTES
+This program exits successfully after printing. Use the Job above, not a
+Deployment or a kubectl run command with its default restart policy. If an old
+standalone Pod named n1 is in CrashLoopBackOff from earlier practice, inspect
+it and remove that old Pod with kubectl delete pod n1. Keep the new Job n1.
+
+==============================================================================
+08. NODE.JS - Display student name, roll number, and branch
+==============================================================================
+
+QUESTION: NODE.JS - Display student name, roll number, and branch
+Folder: n2
+Image: timothysaxena/n2:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.js
+--- BEGIN FILE CONTENT ---
+const name = "Timothy";
+const rollNumber = "YOUR_ROLL_NUMBER";
+const branch = "YOUR_BRANCH";
+
+console.log("Name:", name);
+console.log("Roll number:", rollNumber);
+console.log("Branch:", branch);
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+const declares a binding that cannot be reassigned. Values in quotes are
+strings. console.log prints a label and its value.
+Replace YOUR_ROLL_NUMBER and YOUR_BRANCH before building the image.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM node:24-slim
+WORKDIR /app
+COPY app.js .
+CMD ["node", "app.js"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n2:latest .
+    docker run --rm timothysaxena/n2:latest
+
+
+EXPECTED OUTPUT / TEST:
+With the source exactly as shown:
+Name: Timothy
+Roll number: YOUR_ROLL_NUMBER
+Branch: YOUR_BRANCH
+
+After replacement, your actual roll number and branch should appear instead.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/n2:latest
+
+C. Create the Kubernetes Job configuration.
+
+FILE: job.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: n2
+spec:
+  template:
+    spec:
+      containers:
+        - name: node
+          image: timothysaxena/n2:latest
+      restartPolicy: Never
+--- END FILE CONTENT ---
+
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n2 --timeout=120s
+    kubectl logs job/n2
+
+Expected: Job completes; logs show the program output. Random values or
+timestamps will vary. If the wait times out, inspect the error before continuing.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get job n2
+    kubectl get pods -l job-name=n2
+
+Expected: COMPLETIONS 1/1 and a Pod with status Completed.
+To run this Job again, delete its completed instance and apply its file again.
+Applying an unchanged completed Job does NOT execute it a second time:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete job n2 --ignore-not-found
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n2 --timeout=120s
+    kubectl logs job/n2
+
+
+==============================================================================
+09. NODE.JS - HTTP server showing Welcome to DevOps Lab on port 3000
+==============================================================================
+
+QUESTION: NODE.JS - HTTP server showing Welcome to DevOps Lab on port 3000
+Folder: n3
+Image: timothysaxena/n3:latest
+Browser port on your computer: 8080
+Application port in the container: 3000
+
+FILE: app.js
+--- BEGIN FILE CONTENT ---
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Welcome to DevOps Lab");
+});
+
+server.listen(3000, "0.0.0.0", () => {
+    console.log("Server running on port 3000");
+});
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+
+require("http") loads Node's built-in HTTP module; npm install is unnecessary.
+createServer receives a function that runs for each incoming request.
+req represents the request; res represents the response.
+writeHead(200, ...) sets success status and plain-text content type.
+res.end sends the message and ends that response, not the whole server.
+listen(3000, "0.0.0.0") accepts requests on all container network interfaces.
+Binding only to localhost inside the container would prevent ordinary external
+container traffic from reaching this server.
+EXPOSE 3000 documents the port; it does not publish the port on your computer.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM node:24-slim
+WORKDIR /app
+COPY app.js .
+EXPOSE 3000
+CMD ["node", "app.js"]
+--- END FILE CONTENT ---
+
+A. Build and test with Docker. This is a direct Docker test, before Kubernetes.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n3:latest .
+    docker run --rm -d --name n3-test -p 8080:3000 timothysaxena/n3:latest
+
+Open this URL in your browser:
+http://localhost:8080
+
+-d means background. -p 8080:3000 maps your computer port to the
+container port. --rm removes the test container after it is stopped.
+
+EXPECTED OUTPUT / TEST:
+Browser page:
+Welcome to DevOps Lab
+
+Container logs:
+Server running on port 3000
+The page response and the server's console log are different outputs.
+
+
+TERMINAL COMMANDS (run one line at a time):
+    docker logs n3-test
+
+B. Stop the direct Docker test to free the browser port, then upload the image.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker stop n3-test
+    docker push timothysaxena/n3:latest
+
+C. Create the two Kubernetes files. Deployment keeps the web server running;
+Service selects its Pods and provides a network endpoint.
+
+FILE: deployment.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n3
+spec:
+  selector:
+    matchLabels:
+      app: n3
+  template:
+    metadata:
+      labels:
+        app: n3
+    spec:
+      containers:
+        - name: node-server
+          image: timothysaxena/n3:latest
+--- END FILE CONTENT ---
+
+
+FILE: service.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n3-service
+spec:
+  type: NodePort
+  selector:
+    app: n3
+  ports:
+    - port: 80
+      targetPort: 3000
+--- END FILE CONTENT ---
+
+The Deployment defaults to ONE replica because replicas is omitted. If your
+teacher asks for two copies, add replicas: 2 under the FIRST spec, aligned with
+selector. containerPort is omitted because the declaration is optional; the
+application itself must actually listen on port 3000.
+
+All app: n3 labels/selectors must agree. The Deployment's template adds the
+label to Pods, its selector manages matching Pods, and the Service selector
+finds those Pods. Metadata names name resources; app labels connect resources.
+
+Service port 80 is the Service endpoint; targetPort 3000 is where the
+application listens. NodePort also allocates a node-level port, often in the
+30000-32767 range. Service port 80 is NOT that external node port. Use the
+port-forward command below for a predictable Mac/Windows browser test.
+D. Submit the files and wait for a ready application.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
+    kubectl rollout status deployment/n3 --timeout=120s
+    kubectl get pods -l app=n3
+    kubectl get svc n3-service
+
+Expected: the Deployment becomes available and its Pod is Running with
+READY 1/1. The Service shows TYPE NodePort. Its assigned node port can vary.
+E. Open the Kubernetes version in your browser.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl port-forward service/n3-service 8080:80
+
+Keep this terminal running, then open http://localhost:8080.
+Expected terminal message resembles: Forwarding from 127.0.0.1:8080 -> 3000
+
+The command references Service port 80 and forwards to one matching Pod's
+target port 3000. This debugging connection does not demonstrate balancing
+requests across all replicas. It also works without using the allocated NodePort.
+
+Press Ctrl+C to stop forwarding. This does NOT stop the Deployment or its Pods.
+While forwarding is active, use another terminal for inspection commands:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl logs deployment/n3
+
+F. After editing the source: save it, stop the old forwarding with Ctrl+C,
+then rebuild, push, replace Pods, wait, and reconnect:
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n3:latest .
+    docker push timothysaxena/n3:latest
+    kubectl rollout restart deployment/n3
+    kubectl rollout status deployment/n3 --timeout=120s
+    kubectl port-forward service/n3-service 8080:80
+
+The new Deployment defaults imagePullPolicy to Always because its image uses
+:latest and the policy is omitted at creation. With these files, replacement
+Pods check the registry. Refresh the browser after the new connection is ready.
+Do not also start docker run on the same local port while forwarding is active.
+
+==============================================================================
+10. NODE.JS - Display the current date and time
+==============================================================================
+
+QUESTION: NODE.JS - Display the current date and time
+Folder: n4
+Image: timothysaxena/n4:latest
+Open this task folder in VS Code and its terminal before running commands.
+
+FILE: app.js
+--- BEGIN FILE CONTENT ---
+const now = new Date();
+
+console.log(
+    "Current date and time:",
+    now.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata"
+    })
+);
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+new Date() captures the current time when the program runs.
+toLocaleString formats it. Asia/Kolkata displays Indian time even if the
+container's operating-system timezone is UTC.
+This is one printed timestamp, not a clock that stays running.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM node:24-slim
+WORKDIR /app
+COPY app.js .
+CMD ["node", "app.js"]
+--- END FILE CONTENT ---
+
+A. Build the image and test it with Docker.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n4:latest .
+    docker run --rm timothysaxena/n4:latest
+
+
+EXPECTED OUTPUT / TEST:
+Illustrative format only; your actual date and time will differ:
+Current date and time: 5/11/2026, 9:15:30 am
+
+Punctuation/capitalization may vary by runtime locale data. Docker and
+Kubernetes executions occur at different times, so their timestamps may differ.
+
+B. Upload the tested image to Docker Hub.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker push timothysaxena/n4:latest
+
+C. Create the Kubernetes Job configuration.
+
+FILE: job.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: n4
+spec:
+  template:
+    spec:
+      containers:
+        - name: node
+          image: timothysaxena/n4:latest
+      restartPolicy: Never
+--- END FILE CONTENT ---
+
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n4 --timeout=120s
+    kubectl logs job/n4
+
+Expected: Job completes; logs show the program output. Random values or
+timestamps will vary. If the wait times out, inspect the error before continuing.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl get job n4
+    kubectl get pods -l job-name=n4
+
+Expected: COMPLETIONS 1/1 and a Pod with status Completed.
+To run this Job again, delete its completed instance and apply its file again.
+Applying an unchanged completed Job does NOT execute it a second time:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete job n4 --ignore-not-found
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n4 --timeout=120s
+    kubectl logs job/n4
+
+
+==============================================================================
+11. HTML - Create a simple registration page, Dockerize it, and deploy it
+==============================================================================
+
+QUESTION: HTML - Create a simple registration page, Dockerize it, and deploy it
+Folder: reg
+Image: timothysaxena/reg:latest
+Browser port on your computer: 8081
+Application port in the container: 80
+
+FILE: index.html
+--- BEGIN FILE CONTENT ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+</head>
+<body>
+    <h2>Registration Form</h2>
+
+    <form onsubmit="event.preventDefault(); alert('Form validation successful!');">
+        <label for="name">Name:</label>
+        <input id="name" type="text" required>
+        <br><br>
+
+        <label for="email">Email:</label>
+        <input id="email" type="email" required>
+        <br><br>
+
+        <label for="password">Password:</label>
+        <input id="password" type="password" minlength="6" required>
+        <br><br>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
+--- END FILE CONTENT ---
+
+UNDERSTAND THE CODE
+
+This is a static registration FORM, not a complete account-registration system.
+It does not save data, create accounts, or implement a login/database backend.
+Nginx serves the HTML over HTTP on port 80. The browser renders it.
+label for links each caption to its input id. required blocks empty fields.
+type=email enables basic email-format validation; type=password masks typing;
+minlength=6 requires at least six characters.
+preventDefault prevents normal submission/navigation. The alert demonstrates
+that the browser accepted the inputs. Do not claim a real account was created.
+The nginx base image already starts Nginx, so no extra CMD or EXPOSE is needed.
+
+FILE: Dockerfile
+--- BEGIN FILE CONTENT ---
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+--- END FILE CONTENT ---
+
+A. Build and test with Docker. This is a direct Docker test, before Kubernetes.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/reg:latest .
+    docker run --rm -d --name reg-test -p 8081:80 timothysaxena/reg:latest
+
+Open this URL in your browser:
+http://localhost:8081
+
+-d means background. -p 8081:80 maps your computer port to the
+container port. --rm removes the test container after it is stopped.
+
+EXPECTED OUTPUT / TEST:
+Browser shows:
+Registration Form
+Name:     [input]
+Email:    [input]
+Password: [input]
+[Register]
+
+Leave a required field empty -> browser blocks submission.
+Enter an invalid email or fewer than six password characters -> browser blocks it.
+Example valid input: Timothy, timothy@example.com, demo123
+Click Register -> alert: Form validation successful!
+No registration information is saved by this example.
+Nginx logs may include startup messages and HTTP access lines; these can vary.
+
+
+TERMINAL COMMANDS (run one line at a time):
+    docker logs reg-test
+
+B. Stop the direct Docker test to free the browser port, then upload the image.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker stop reg-test
+    docker push timothysaxena/reg:latest
+
+C. Create the two Kubernetes files. Deployment keeps the web server running;
+Service selects its Pods and provides a network endpoint.
+
+FILE: deployment.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reg
+spec:
+  selector:
+    matchLabels:
+      app: reg
+  template:
+    metadata:
+      labels:
+        app: reg
+    spec:
+      containers:
+        - name: registration
+          image: timothysaxena/reg:latest
+--- END FILE CONTENT ---
+
+
+FILE: service.yaml
+--- BEGIN FILE CONTENT ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reg-service
+spec:
+  type: NodePort
+  selector:
+    app: reg
+  ports:
+    - port: 80
+      targetPort: 80
+--- END FILE CONTENT ---
+
+The Deployment defaults to ONE replica because replicas is omitted. If your
+teacher asks for two copies, add replicas: 2 under the FIRST spec, aligned with
+selector. containerPort is omitted because the declaration is optional; the
+application itself must actually listen on port 80.
+
+All app: reg labels/selectors must agree. The Deployment's template adds the
+label to Pods, its selector manages matching Pods, and the Service selector
+finds those Pods. Metadata names name resources; app labels connect resources.
+
+Service port 80 is the Service endpoint; targetPort 80 is where the
+application listens. NodePort also allocates a node-level port, often in the
+30000-32767 range. Service port 80 is NOT that external node port. Use the
+port-forward command below for a predictable Mac/Windows browser test.
+D. Submit the files and wait for a ready application.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
+    kubectl rollout status deployment/reg --timeout=120s
+    kubectl get pods -l app=reg
+    kubectl get svc reg-service
+
+Expected: the Deployment becomes available and its Pod is Running with
+READY 1/1. The Service shows TYPE NodePort. Its assigned node port can vary.
+E. Open the Kubernetes version in your browser.
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl port-forward service/reg-service 8081:80
+
+Keep this terminal running, then open http://localhost:8081.
+Expected terminal message resembles: Forwarding from 127.0.0.1:8081 -> 80
+
+The command references Service port 80 and forwards to one matching Pod's
+target port 80. This debugging connection does not demonstrate balancing
+requests across all replicas. It also works without using the allocated NodePort.
+
+Press Ctrl+C to stop forwarding. This does NOT stop the Deployment or its Pods.
+While forwarding is active, use another terminal for inspection commands:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl logs deployment/reg
+
+F. After editing the source: save it, stop the old forwarding with Ctrl+C,
+then rebuild, push, replace Pods, wait, and reconnect:
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/reg:latest .
+    docker push timothysaxena/reg:latest
+    kubectl rollout restart deployment/reg
+    kubectl rollout status deployment/reg --timeout=120s
+    kubectl port-forward service/reg-service 8081:80
+
+The new Deployment defaults imagePullPolicy to Always because its image uses
+:latest and the policy is omitted at creation. With these files, replacement
+Pods check the registry. Refresh the browser after the new connection is ready.
+Do not also start docker run on the same local port while forwarding is active.
+
+==============================================================================
+12. UNDERSTAND THE FILES AND COMMANDS
+==============================================================================
+
+A. Four separate things
+Source code = the program you edit.
+Dockerfile  = instructions used to construct an image.
+Image       = packaged program and environment; a snapshot of copied files.
+Container   = a running instance created from an image.
+
+COPY app.js . takes a copy DURING BUILD. It does not link the running container
+to the source file on your computer. Existing containers do not acquire changes
+when you save a file or rebuild an image with the same tag.
+
+B. Dockerfile instructions
+FROM     Choose the starting image/runtime.
+WORKDIR  Choose/create the working directory INSIDE the image.
+COPY     Include source files from the build context.
+RUN      Execute a command while building, such as javac App.java.
+CMD      Default command executed when a container starts.
+EXPOSE   Document an intended container port; this alone publishes nothing.
+
+Python: python app.py
+Java:   javac App.java during build; java App when running.
+Node:   node app.js
+HTML:   Nginx already starts through its base-image command.
+
+C. Docker commands and options
+docker build -t IMAGE .       Build from this folder and assign an image tag.
+docker run IMAGE             Create and start a NEW container from the image.
+docker run --rm IMAGE        Also remove that container after it exits.
+docker run -it IMAGE         Keep stdin open and allocate a terminal for input.
+docker run -d IMAGE          Run in the background.
+-p HOST:CONTAINER            Publish a container port on your computer.
+--name NAME                 Name that container.
+docker tag OLD NEW           Give an existing image another name; no rebuild.
+docker push IMAGE            Upload an image to Docker Hub/registry.
+docker pull IMAGE            Download an image; does not update existing containers.
+docker ps                    List running containers.
+docker ps -a                 Also show stopped containers.
+docker image ls              List local images.
+docker logs NAME             Read a container's output.
+docker stop NAME             Stop a running container.
+docker start -a NAME         Start an EXISTING stopped container and show output.
+                             This still uses its old image; not an update method.
+docker rm NAME               Remove a stopped container; not the underlying image.
+
+D. Kubernetes objects
+Pod         Smallest deployment unit; our examples contain one app container.
+Job         Run a task to successful completion. Default goal: one completion.
+Deployment  Maintain long-running application Pods and manage their updates.
+Service     Stable network endpoint that selects matching Pods.
+Node        A machine participating in the cluster, where Pods can run.
+Context     Connection settings identifying the cluster/user/namespace.
+
+Jobs: restartPolicy Never prevents restarting the failed container within its
+Pod, but a Job controller can create another Pod to retry a failed task. A Job
+is not an exactly-once execution guarantee for tasks with external side effects.
+
+E. Why Deployment YAML has two spec entries
+Deployment
+  spec                 Desired Deployment configuration
+    selector           Which Pods it manages
+    template           Blueprint for new Pods
+      metadata.labels  Labels put on each Pod
+      spec             Desired contents of each Pod
+        containers     The image(s) to run
+
+F. Why two YAML files for the web apps
+deployment.yaml says what image should keep running.
+service.yaml says which Pods should receive network traffic and on which port.
+These are two objects, not a requirement for two physical files: they could
+be in one YAML file separated by ---. We keep separate files for clarity.
+
+G. Port map to remember
+App    Application listens on   Service port   targetPort   Browser port
+n3     3000                     80             3000         8080
+reg    80                       80             80           8081
+
+docker run -p 8080:3000 maps computer port directly to a Docker container.
+kubectl port-forward service/n3-service 8080:80 selects a Pod using the Service
+and forwards local 8080 to its target port, using Service port 80 as the reference.
+The allocated NodePort is separate, such as 30656; it is shown by kubectl get svc.
+Port-forwarding does not require NodePort, but we retain NodePort to match the
+teacher's example. It is useful on local setups where direct node access varies.
+
+H. Kubernetes commands
+kubectl apply -f FILE         Create/update objects described by a YAML file.
+kubectl run NAME ... -it      Create an interactive Pod (with our flags).
+kubectl get pods              List Pod status.
+kubectl get jobs              List task completion counts.
+kubectl get deployments       List managed long-running applications.
+kubectl get svc               List Services and their ports.
+kubectl logs POD              Show the selected Pod's container output.
+kubectl logs job/NAME         Show logs from a Pod selected for that Job.
+kubectl logs deployment/NAME  Show logs from a selected Deployment Pod.
+kubectl describe pod POD      Inspect configuration, state, and recent events.
+kubectl rollout restart ...  Trigger replacement Pods for a Deployment.
+kubectl rollout status ...   Wait for the Deployment update to finish.
+kubectl delete TYPE NAME      Delete the named object, not your source files.
+
+Images and source live in different places: Docker Hub stores images; GitHub
+stores code, Dockerfiles, YAML, and instructions. Pushing to one does not push
+to the other.
+
+==============================================================================
+13. REPEAT RUNS, CODE UPDATES, AND SAFE CLEANUP
+==============================================================================
+
+A. Only changed app.js/app.py/App.java/index.html?
+1. Save the file.
+2. Build again from the correct task folder.
+3. Push the image again for Kubernetes to pull.
+4. Replace the running instance according to its type:
+   - Job: delete that Job, then apply job.yaml again.
+   - Interactive Pod: delete that Pod, then repeat kubectl run ... -it.
+   - Deployment: rollout restart, wait for readiness, reconnect port-forward.
+5. View fresh logs or refresh the browser.
+
+You do NOT have to change YAML just because program text changed.
+If image name, labels, replica count, or ports change, edit the appropriate
+YAML and run kubectl apply -f on that file. Reapplying identical Deployment
+YAML does not by itself restart Pods after a mutable image tag was pushed.
+
+B. Exact Node web-app update routine (inside n3)
+Stop the previous port-forward with Ctrl+C first.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/n3:latest .
+    docker push timothysaxena/n3:latest
+    kubectl rollout restart deployment/n3
+    kubectl rollout status deployment/n3 --timeout=120s
+    kubectl port-forward service/n3-service 8080:80
+
+Open http://localhost:8080. No additional docker run is needed when Kubernetes
+is running the application. A port-forward can end when its selected Pod is
+replaced; start it again after rollout completion.
+
+C. Exact registration update routine (inside reg)
+Stop the previous port-forward with Ctrl+C first.
+
+TERMINAL COMMANDS (run one line at a time):
+    docker build -t timothysaxena/reg:latest .
+    docker push timothysaxena/reg:latest
+    kubectl rollout restart deployment/reg
+    kubectl rollout status deployment/reg --timeout=120s
+    kubectl port-forward service/reg-service 8081:80
+
+D. Updating a direct Docker web test, without Kubernetes
+Stop the old test container first. Our --rm flag removes it on stop.
+For example, from n3:
+
+TERMINAL COMMANDS (run one line at a time):
+    docker stop n3-test
+    docker build -t timothysaxena/n3:latest .
+    docker run --rm -d --name n3-test -p 8080:3000 timothysaxena/n3:latest
+
+If no n3-test container exists, skip its stop command. Stop any other known
+container/port-forward occupying 8080 before running the test. Starting an
+old stopped container is NOT the same as creating one from a rebuilt image.
+
+E. Cleanup only when you are finished demonstrating the tasks
+Stop any port-forward terminals with Ctrl+C. From each web task folder:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete -f deployment.yaml
+    kubectl delete -f service.yaml
+
+This removes that web Deployment, its managed Pods, and its Service. For the
+other exercises, you may remove their completed resources explicitly:
+
+TERMINAL COMMANDS (run one line at a time):
+    kubectl delete job py-t-1 n1 n2 n4 --ignore-not-found
+    kubectl delete pod py-t-2 py-t-3 j1 j2 j3 --ignore-not-found
+
+Deleting Jobs also deletes their Pods and access to those Pods' logs. Save any
+needed evidence first. These commands do not delete source files or Docker Hub
+images. Avoid broad commands such as deleting all Pods or pruning all images;
+they can affect unrelated work and are unnecessary for this lab.
+
+==============================================================================
+14. COMMON ERRORS AND HOW TO RECTIFY THEM
+==============================================================================
+
+Run diagnostics in a second terminal if your first is forwarding a web port.
+Read the actual error before changing code. Names below match this manual;
+replace a named resource only when diagnosing a different task.
+
+01. Cannot connect to the Docker daemon / Docker Server unavailable
+Cause: Docker Desktop is stopped or still starting.
+Fix: open Docker Desktop, wait until ready, then run docker version again.
+If using Windows, confirm Docker Desktop is set to Linux containers.
+
+02. docker or kubectl is not recognized / command not found
+Cause: tool not installed or its location is missing from PATH.
+Fix: verify Docker Desktop/tool setup; reopen the terminal after installation.
+On a college computer, use the terminal/environment provided for the lab or
+ask the lab administrator to complete installation. Do not change YAML for this.
+
+03. Dockerfile not found / COPY failed: file not found
+Cause: wrong folder, unsaved file, wrong capitalization, or hidden .txt suffix.
+Fix: list files (Mac ls / Windows dir), open the correct task folder, and verify
+Dockerfile and app.py/App.java/app.js/index.html are present. Save and rebuild.
+Use Dockerfile with no extension. Keep the final dot in docker build.
+
+04. invalid reference format / repository name must be lowercase
+Cause: malformed image name, spaces, or uppercase repository name.
+Fix example: timothysaxena/n3:latest. Image names must match build/push/YAML.
+
+05. push denied / requested access denied / repository does not exist
+Fix: docker login, confirm account timothysaxena, and verify the image name.
+If necessary, create the matching PUBLIC Docker Hub repository, then push.
+If the image exists only as n3:latest, tag it first:
+    docker tag n3:latest timothysaxena/n3:latest
+    docker push timothysaxena/n3:latest
+Do not type a password into a command that will be saved in this manual/Git.
+
+06. An image does not exist locally with the tag / pull access denied on run
+Cause: built a different image name or skipped the build.
+Fix: docker image ls, then build the exact name used by run/push.
+
+07. Kubernetes connection refused / no current context / no Ready nodes
+Fix:
+    kubectl config get-contexts
+    kubectl config current-context
+    kubectl get nodes
+Start the intended local cluster and wait. If docker-desktop exists but is not
+selected, use kubectl config use-context docker-desktop. At college, select the
+provided local cluster rather than assuming the same context name.
+
+08. Error converting YAML / mapping values not allowed / unknown field
+Cause: indentation, tabs, misspelled keys, or a key nested under the wrong parent.
+Fix: use spaces and the exact file structure. apiVersion, kind, metadata and
+spec are top-level. In Deployment, template is under the outer spec.
+Validate without saving changes to the cluster:
+    kubectl apply --dry-run=server -f deployment.yaml
+    kubectl apply --dry-run=server -f service.yaml
+
+09. ImagePullBackOff / ErrImagePull
+Inspect the actual event:
+    kubectl get pods
+    kubectl describe pod YOUR_POD_NAME
+Replace YOUR_POD_NAME with the name shown by get pods; do not type the placeholder.
+Likely fixes: correct the YAML image name, push the image, make its repository
+public, restore internet access, or wait for a registry rate limit to clear.
+A private repository needs pull credentials; this manual uses public repos.
+
+10. no matching manifest / exec format error on another computer
+Cause can be a CPU-architecture mismatch between image and node, or the wrong
+container operating-system mode. Read the event to confirm.
+For this lab, rebuild the source on the target college PC with Linux containers,
+push that freshly built image, and recreate its Pod/Job or restart Deployment.
+Do not assume that an image built on Apple Silicon works on an Intel/AMD node.
+
+11. CrashLoopBackOff for Hello Docker or another print-only program
+Cause: a restart-always workload repeatedly starts a program that exits quickly.
+Fix: use Job YAML for non-interactive tasks, or --restart=Never for interactive
+kubectl run. Inspect logs/events; CrashLoopBackOff can also indicate code errors.
+If the old standalone n1 Pod is the leftover problem:
+    kubectl logs n1
+    kubectl delete pod n1
+Then use the n1 job.yaml from Question 07. Do not delete a managed server Pod
+as a substitute for fixing its code; its Deployment would create another one.
+
+12. Python EOFError / Java NoSuchElementException / cannot enter input
+Cause: the program expects keyboard input but stdin was not attached/open.
+Fix: Docker needs -it. Kubernetes uses this manual's kubectl run ... -it
+--restart=Never command. Plain kubectl logs only reads output; it cannot send
+answers to input() or Scanner. Recreate the failed interactive Pod and try again.
+
+13. Kubernetes prompt is missing after interactive attachment
+The first prompt may have printed before attachment. Once the container is
+attached, type the expected input and press Enter. If it does not respond,
+inspect kubectl get pods and kubectl logs in another terminal. Do not paste
+docker/kubectl commands into the application's input prompt.
+
+14. Python ValueError / Java InputMismatchException
+Enter numeric input where required. Python Task 2: 10 20 30, not 10,20,30.
+Java Task 1: integers such as 6 and 4, not six or 6.5. Rerun after correcting input.
+
+15. Java public class should be declared in App.java / class not found
+Keep public class App in App.java. Dockerfile must COPY App.java, RUN javac
+App.java, then CMD ["java", "App"]. Do not run java App.class.
+If build compilation fails, read the first compiler error and fix that line.
+
+16. AlreadyExists: Pod NAME already exists
+Each kubectl run creates a new Pod. Delete only that old task Pod and rerun:
+    kubectl delete pod py-t-2 --ignore-not-found
+    kubectl run py-t-2 --image=timothysaxena/py-t-2:latest --restart=Never -it
+Use j1/j2/j3/py-t-3 and their matching images for other interactive tasks.
+
+17. Job is Completed but apply does not produce a new result
+A completed Job stays completed. Delete it and recreate it, then read new logs:
+    kubectl delete job n4 --ignore-not-found
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/n4 --timeout=120s
+    kubectl logs job/n4
+Run those file commands from n4. The same pattern applies to py1/n1/n2.
+
+18. Job field is immutable after changing its image/template
+Fix: delete that lab Job and apply its updated file again. Save needed logs
+first; deleting the Job removes its Pods. For a Deployment selector change,
+prefer retaining the original labels/selectors, as in this manual; changing
+immutable selectors requires a deliberate recreation and can cause downtime.
+
+19. Docker container name is already in use
+Inspect:
+    docker ps -a
+If it is your old stopped test container, remove that named container:
+    docker rm n3-test
+If running, stop it first. With --rm, stop already removes it. Do not remove an
+unrelated container just because it exists. Then repeat docker run.
+
+20. Port is already allocated / address already in use
+Often an old Docker server or port-forward still owns 8080/8081.
+First inspect:
+    docker ps
+Stop only the known test container, or press Ctrl+C in the old forwarding terminal.
+Mac port inspection:
+    lsof -nP -iTCP:8080 -sTCP:LISTEN
+Windows PowerShell inspection:
+    Get-NetTCPConnection -LocalPort 8080 -State Listen
+Identify the owning application instead of terminating processes blindly.
+Alternatively choose a different LOCAL port:
+    kubectl port-forward service/n3-service 8090:80
+Then browse http://localhost:8090. Do not change targetPort for a local-port clash.
+
+21. Changes in app.js or HTML do not appear in the page
+Cause: source, built image, Docker Hub image, and running container are separate.
+Fix: save -> build -> push -> replace Pods -> wait -> restart port-forward -> refresh.
+See Section 13 for exact n3/reg commands. Merely saving, pushing GitHub, running
+docker pull, or reapplying identical Deployment YAML is not the whole update.
+
+Also check WHICH app owns your browser port. In your actual n3 issue, localhost
+8080 was served by an old direct Docker container even while Kubernetes ran.
+Use docker ps and stop the old known container before port-forwarding to Kubernetes.
+The old container's generated name will vary; do not assume a historical name.
+
+To compare file copies for n3:
+    kubectl exec deployment/n3 -- cat /app/app.js
+For a direct Docker container (replace YOUR_CONTAINER_NAME):
+    docker exec YOUR_CONTAINER_NAME cat /app/app.js
+These read the file inside the running container. They do not modify it.
+If served content is verified new but the browser is still old, reload bypassing
+cache: Windows Ctrl+Shift+R; Mac Command+Shift+R.
+
+22. Page unreachable / connection refused / Service has no usable Pods
+Inspect:
+    kubectl get pods -l app=n3
+    kubectl get svc n3-service
+    kubectl describe svc n3-service
+    kubectl logs deployment/n3
+Confirm the Pod is Ready, Service selector matches Pod labels, targetPort is
+3000 for n3 (80 for reg), and Node listens on 0.0.0.0. Keep forwarding running.
+For forwarding, use http://localhost:8080 or :8081 as printed, not HTTPS.
+EXPOSE and containerPort declarations alone do not start or publish a server.
+
+23. port-forward stops / lost connection after a rollout
+Its selected Pod was replaced. Wait for rollout completion, then start the
+same port-forward command again. This is expected after a Pod replacement.
+
+24. Wait timed out / rollout has not completed
+A timeout is not a diagnosis. Inspect Pods, events, and logs:
+    kubectl get pods
+    kubectl describe pod YOUR_POD_NAME
+    kubectl logs YOUR_POD_NAME
+For a restarting container, also try:
+    kubectl logs YOUR_POD_NAME --previous
+Resolve the reported image, scheduling, startup, or code problem. Initial
+downloads can be slow; if they are progressing, wait longer and check again.
+
+25. Deployment still uses an old cached image
+Our :latest manifests default to imagePullPolicy Always when first created.
+If you have edited/used other manifests, inspect the actual policy:
+    kubectl get deployment n3 -o yaml
+If needed, add imagePullPolicy: Always under the container, aligned with image,
+apply deployment.yaml, and wait for rollout. Always does not mean continuous
+updates; a new/restarted Pod is still needed after a new push to the same tag.
+
+26. Date/time does not match India
+Use the n4 source with timeZone: "Asia/Kolkata". A container may default to UTC.
+Do not change the computer clock just to change a display timezone.
+
+27. Registration form does not save users
+Expected: Question 11 is a static frontend demonstration. It validates fields
+in the browser and shows an alert. A real registration system needs a backend
+and storage; Nginx serving HTML alone does not implement those features.
+
+28. npm install fails / package.json missing
+The Node examples here use only built-in features. Use the supplied Dockerfile,
+which does not run npm install or COPY package*.json. Do not add unnecessary
+dependencies just because a generic teacher example included them.
+
+==============================================================================
+15. SAVE THE FILES ON GITHUB
+==============================================================================
+
+Docker Hub stores IMAGES. GitHub stores SOURCE FILES and instructions.
+This section gives manual steps; no GitHub repository is created or pushed
+just by producing this text file. Your actual GitHub username/remote was not
+confirmed, so replace the URL placeholders below with your real repository URL.
+
+A. Start from the practice ROOT, not from inside an individual task folder.
+Your terminal previously showed an existing Git repository on main. Inspect it
+before initializing anything:
+
+TERMINAL COMMANDS (run one line at a time):
+    git status --short
+    git rev-parse --show-toplevel
+    git remote -v
+    git branch --show-current
+
+If the repository root is a parent folder, commands use paths relative to your
+current practice root, but commits include ALL already staged changes in that
+repository. Review the staged diff before committing. Do not initialize nested
+repositories inside each question folder.
+
+If Git says "not a git repository", and this is the intended independent lab
+root, initialize once:
+
+TERMINAL COMMANDS (run one line at a time):
+    git init -b main
+
+B. Create an empty GitHub repository if you do not already have one.
+Suggested name: docker-kubernetes-lab. For a first import, leave GitHub's README,
+license, and .gitignore initialization unchecked so the remote is empty.
+Copy its HTTPS URL. If no origin exists, add it (replace both placeholders):
+
+TERMINAL COMMANDS (run one line at a time):
+    git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY.git
+
+If origin already exists and is correct, SKIP this command. If it is the wrong
+repository, confirm the intended destination before changing it; do not blindly
+replace an existing remote or force-push. Your Docker Hub username is not proof
+of your GitHub username.
+
+C. Create .gitignore in the practice root with this content:
+--- BEGIN FILE CONTENT ---
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+*.pyc
+*.class
+.env
+.env.*
+--- END FILE CONTENT ---
+
+D. Copy this manual into the practice root as:
+Docker_Kubernetes_11_Tasks_Manual.txt
+
+For interactive questions, the kubectl run command in this manual is the
+Kubernetes instruction; no job.yaml is required for them. Keep source files,
+Dockerfiles, web YAMLs and Job YAMLs in their respective folders.
+
+Stage only the lab folders and these two root files. The following command
+assumes all folders from the naming table exist; omit a missing folder until
+you create it rather than staging unrelated files.
+
+TERMINAL COMMANDS (run one line at a time):
+    git add -- .gitignore Docker_Kubernetes_11_Tasks_Manual.txt py1 py2 py3 j1 j2 j3 n1 n2 n3 n4 reg
+    git diff --cached --stat
+    git diff --cached
+
+Check that the staged content contains only the work you intend to upload.
+If an unrelated file is staged and the repository already has a commit, unstage
+just that path with git restore --staged -- PATH_TO_FILE; this keeps its working
+copy. Never include passwords, tokens, or Docker login configuration in Git.
+
+Then commit:
+
+TERMINAL COMMANDS (run one line at a time):
+    git commit -m "Add 11 Docker and Kubernetes lab exercises"
+
+If Git asks for an author identity, set your actual name and email for this
+repository, then repeat the commit:
+    git config user.name "YOUR_NAME"
+    git config user.email "YOUR_EMAIL"
+
+If your branch is main, push it:
+
+TERMINAL COMMANDS (run one line at a time):
+    git push -u origin main
+
+If your existing branch has another name, use its actual name instead of main;
+do not rename a shared branch just to match an example. Authenticate through
+the configured credential manager/browser, or a personal access token when
+HTTPS asks for one. GitHub account passwords are not used for HTTPS Git pushes.
+
+Open your repository in the browser and verify all 11 task folders and this
+manual are present. A successful local commit alone is not a GitHub upload.
+
+E. Later changes
+Save files -> git add only changed lab paths -> inspect staged diff -> git commit
+-> git push. This saves source; it does not rebuild Docker images or restart Pods.
+
+F. Common Git errors
+- remote origin already exists: inspect git remote -v; do not add it again.
+- nothing to commit: files are unchanged or not staged; inspect git status.
+- src refspec main does not match any: check that a commit exists and the actual
+  branch name with git branch --show-current.
+- repository not found: verify the remote URL, your login, and repository access.
+- non-fast-forward / fetch first: the remote contains commits you lack. Fetch
+  and inspect with git fetch origin and git log --oneline --graph --all -12.
+  For an existing shared history on main, commit your local work, then use
+  git pull --rebase origin main and resolve any conflicts before pushing.
+  If this is a separately initialized remote with unrelated history, pause and
+  reconcile it or clone that repository and copy the lab files into the clone.
+  Do not use force-push as a generic fix.
+
+==============================================================================
+16. EXAM QUICK REFERENCE
+==============================================================================
+
+BEFORE STARTING
+    docker version
+    kubectl config get-contexts
+    kubectl get nodes
+    docker login
+
+CHOOSE THE PATTERN
+Print once, no input  -> Job: py1, n1, n2, n4.
+Read keyboard input  -> Interactive Pod: py2, py3, j1, j2, j3.
+Serve browser pages  -> Deployment + Service: n3, reg.
+
+IMAGE WORKFLOW
+    docker build -t timothysaxena/NAME:latest .
+    docker run --rm timothysaxena/NAME:latest
+    docker push timothysaxena/NAME:latest
+Replace NAME using Section 00. Add -it to docker run for keyboard-input tasks.
+Use the web-specific -d and -p command for n3/reg instead of the console command.
+
+JOB WORKFLOW (from the folder containing job.yaml)
+    kubectl apply -f job.yaml
+    kubectl wait --for=condition=complete job/JOB_NAME --timeout=120s
+    kubectl logs job/JOB_NAME
+Replace JOB_NAME; use py-t-1, n1, n2 or n4. Delete the old Job before a rerun.
+
+INTERACTIVE WORKFLOW
+    kubectl run POD_NAME --image=timothysaxena/IMAGE_NAME:latest --restart=Never -it
+Replace BOTH names using the task's exact command. Delete the old Pod to rerun.
+
+WEB WORKFLOW (from n3 or reg)
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
+    kubectl rollout status deployment/DEPLOYMENT_NAME --timeout=120s
+Then choose one:
+    kubectl port-forward service/n3-service 8080:80
+    kubectl port-forward service/reg-service 8081:80
+Keep that terminal open; browse the corresponding localhost URL.
+
+WHEN CODE CHANGES
+Save -> build -> push -> replace Job/Pod or restart Deployment -> read fresh
+logs or reconnect port-forward and refresh the browser.
+
+VIVA ANSWERS
+What is Docker?
+It packages and runs applications in containers with their required environment.
+
+What is an image versus a container?
+An image is the package; a container is an instance created from it.
+
+What is Kubernetes?
+It manages containerized workloads according to a declared desired state.
+
+Why a Job for random numbers?
+The program prints once and exits; successful completion is the desired result.
+
+Why -it?
+It keeps input open and allocates a terminal so we can interact with the program.
+
+Why Deployment and Service for a website?
+Deployment maintains the running server Pods. Service provides a network
+endpoint and selects the Pods that receive traffic.
+
+Why not a Service for a print-only program?
+It does not listen for network requests; its output is read through logs.
+
+Why is Java's Dockerfile different?
+It uses RUN javac App.java to compile, then CMD java App to execute at startup.
+
+What does latest mean?
+It is the default tag when none is supplied. It does not make running
+containers update automatically when source files or the registry image change.
+
+What is the difference between GitHub and Docker Hub?
+GitHub stores the source and configuration; Docker Hub stores built images.
+
+Does the HTML registration page save accounts?
+No. It is a static frontend with browser validation, served using Nginx.
+
+==============================================================================
+17. SOURCES AND VALIDATION NOTES
+==============================================================================
+
+Teacher-provided task sources (read during this study sequence):
+1. /Users/timothysaxena/Downloads/MGIT/Sem-V/7. DevOpsL/4.1docker-py-java/python & java dcoker task.pdf
+2. /Users/timothysaxena/Downloads/MGIT/Sem-V/7. DevOpsL/4.2node-docker/NODE JS PROJECTS FOR DOCKER.docx
+3. /Users/timothysaxena/Downloads/MGIT/Sem-V/7. DevOpsL/5.Kubernetes/STEP BY STEP PROCEDURE FOR KUBERNETES.pdf
+4. Registration-page exercise discussed in this chat; the supplied older
+   registration-app folder uses Nginx to serve static HTML.
+
+Official references consulted for the explanations and commands:
+Dockerfile reference: https://docs.docker.com/reference/dockerfile/
+Docker login: https://docs.docker.com/reference/cli/docker/login/
+Docker push: https://docs.docker.com/reference/cli/docker/image/push/
+Python image: https://hub.docker.com/_/python
+Java image: https://hub.docker.com/_/eclipse-temurin
+Node image: https://hub.docker.com/_/node
+Nginx image: https://hub.docker.com/_/nginx
+Node HTTP: https://nodejs.org/api/http.html
+Kubernetes Jobs: https://kubernetes.io/docs/concepts/workloads/controllers/job/
+Deployments: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+Services: https://kubernetes.io/docs/concepts/services-networking/service/
+Interactive Pods: https://kubernetes.io/docs/reference/kubectl/generated/kubectl_run/
+Port-forwarding: https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
+GitHub import: https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github
+
+The teacher's generic dependency examples are simplified where dependencies
+are unused. Python random is built in; these Node programs need no external npm
+packages. Eclipse Temurin provides the Java compiler/runtime. The web manifests
+use one default replica, with NodePort retained from the teacher's pattern.
+
+Validation completed while preparing this manual:
+- All 11 question sections checked for complete files, matching image names,
+  build/push commands, and expected-output examples.
+- Python programs executed for their documented normal and relevant edge cases.
+- Java programs compiled targeting Java 17 and executed locally, including both
+  palindrome/non-palindrome cases and an inherited multi-word student name.
+- Node console programs executed; India-time formatting checked with a fixed
+  clock; the HTTP server answered two real local HTTP requests correctly.
+- All eight Job/Deployment/Service YAML files accepted by the local Kubernetes
+  API in server dry-run. No resources were applied by those checks.
+- All five interactive tasks' base Pod definitions generated in client dry-run;
+  stdin/TTY flags checked against kubectl help. Attached interactive execution
+  cannot itself be combined with kubectl dry-run.
+- HTML field structure and validation attributes checked. A new browser-based
+  form test and a fresh Nginx container deployment were not performed for this
+  document; the expected browser behaviour is described in Question 11.
+- Dockerfiles reviewed. All 11 images were not newly built/pushed as part of
+  creating this manual. GitHub publishing was not performed.
+
+END OF MANUAL

@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n3
+spec:
+  selector:
+    matchLabels:
+      app: n3
+  template:
+    metadata:
+      labels:
+        app: n3
+    spec:
+      containers:
+        - name: node-server
+          image: timothysaxena/n3:latest

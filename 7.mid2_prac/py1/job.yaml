@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: py-t-1
+spec:
+  template:
+    spec:
+      containers:
+        - name: python
+          image: timothysaxena/py-t-1:latest
+      restartPolicy: Never
